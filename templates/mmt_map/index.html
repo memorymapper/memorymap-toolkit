@@ -1,0 +1,65 @@
+{% extends 'mmt_map/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<div class="row full_height iface_container">
+	<div class="col map_container" id="map">
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+// Instantiate a global MmtMap object that will deal with everything related to map interactions and data. Further methods and properties for dealing with hover interactions, click interactions, filtering and search are added in interactionHandler.js, filters.js and search.js.
+
+const MmtMap = {
+	
+	settings: {
+		mapCenter: {{ map_center|safe }},
+		zoom: {{ config.ZOOM }},
+		maxZoom: {{ config.MAX_ZOOM }},
+		minZoom: {{ config.MIN_ZOOM }},
+		pitch: {{ config.PITCH }},
+		bearing: {{ config.BEARING }},
+		scale: '{{ config.SCALE }}'
+	},
+
+	themes: [
+		{% for theme in themes %}
+		{
+			'id': '{{ theme.id }}',
+			'name': '{{ theme }}',
+			'color': '{{ theme.color }}'
+		},
+		{% endfor %}
+	],
+
+	themeStyleExpressions: [
+    'case',
+	    {% for theme in themes %}
+        ['==', ['to-number', ['get', 'theme_id']], {{ theme.id }}], 
+        '{{ theme.color }}',
+        {% endfor %}
+        'green'
+    ]
+}
+
+const baseMapStyleUrl = '{{ config.BASE_MAP_STYLE }}';
+
+const baseMapStyleKey = '{{ config.BASE_MAP_STYLE_KEY}}';
+
+const switchableLayers = '{{ config.SWITCHABLE_LAYERS }}'.split(',');
+
+</script>
+
+<script src="{% static 'js/audioHandler.js' %}"></script>
+<script src="{% static 'js/interactionHandler.js' %}"></script>
+<script src="{% static 'js/mapHandler.js' %}"></script>
+<script src="{% static 'js/filters.js' %}"></script>
+<script src="{% static 'js/search.js' %}"></script>
+
+{% endblock %}
