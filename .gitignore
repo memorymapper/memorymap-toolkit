@@ -90,3 +90,5 @@ db.sqlite3
 
 static/
 media/
+
+secret_settings.py

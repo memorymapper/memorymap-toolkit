@@ -11,9 +11,10 @@ for (let i=0; i < MmtMap.themes.length; i++) {
 
 // If there are switchable layers, add a #maps dropdown to the menu bar
 
-const mapLayerMenu = '<li class="nav-item dropdown" id="map_layers"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Map Layers</a><div class="dropdown-menu" id="maps" aria-labelledby="navbarDropdown"></div></li>';
+if (MmtMap.switchableLayers[0] != "") {
 
-if (switchableLayers[0] != "") {
+    let mapLayerMenu = '<li class="nav-item dropdown" id="map_layers"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Map Layers</a><div class="dropdown-menu" id="maps" aria-labelledby="navbarDropdown"></div></li>';
+
     $('.menu_links').append(mapLayerMenu);
 }
 
@@ -22,7 +23,7 @@ if (switchableLayers[0] != "") {
 
 let map = new mapboxgl.Map({
     container: 'map',
-    center: [MmtMap.settings.mapCenter.lon, MmtMap.settings.mapCenter.lat],
+    center: MmtMap.settings.mapCenter,
     zoom: MmtMap.settings.zoom,
     minZoom: MmtMap.settings.minZoom,
     maxZoom: MmtMap.settings.maxZoom,
@@ -31,29 +32,33 @@ let map = new mapboxgl.Map({
     scrollZoom: true,
     dragPan: true,
     pitch: MmtMap.settings.pitch,
-    bearing: MmtMap.settings.bearing
+    bearing: MmtMap.settings.bearing,
+    antialias: true
 });
 
 
 // Load the map style and add the switchable layers to the menu bar. These things are together as the style definition needs to be loaded in order to populate the switchable layers menu
 
-$.get(baseMapStyleUrl, function(data) {
+MmtMap.addStyle();
+
+$.get(MmtMap.style, function(data) {
 
     let style = data;
 
+    console.log('style');
+
     // If the default map style is being used, add the key to the sources and glyphs urls
-    if ('Ordnance Survey Open Zoomstack' in style.sources) {
-        style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + baseMapStyleKey;
-        style.glyphs = style.glyphs + baseMapStyleKey;
+    if (MmtMap.style == '/static/js/default_map_style.json') {
+        style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + MmtMap.baseMapStyleKey;
+        style.glyphs = style.glyphs + MmtMap.baseMapStyleKey;
     }
 
     map.setStyle(style);
 
-
     // Add links for the switchable layers
 
     for (let i=0; i < style.layers.length; i++) {
-        if (switchableLayers.includes(style.layers[i].id)) {
+        if (MmtMap.switchableLayers.includes(style.layers[i].id)) {
             let linkText = style.layers[i].id.charAt(0).toUpperCase() + style.layers[i].id.slice(1);
             let link = '<a class="dropdown-item switchable_layer visible" data-layer_id="' + style.layers[i].id +'" href="#">' + linkText +'</a>'
             $('#maps').append(link);
@@ -73,7 +78,6 @@ $.get(baseMapStyleUrl, function(data) {
             $(this).addClass('visible');
         }
     });
-
 
 });
 
@@ -97,7 +101,9 @@ map.addControl(nav, 'top-right');
 
 // Then load the interactive features
 
+
 map.on('load', function() { 
+
     map.addSource('interactive', {
         type: 'vector',
         url: '/tiles/interactive.json'
@@ -118,7 +124,7 @@ map.on('load', function() {
             'circle-stroke-width': 2,
             'circle-pitch-alignment': 'map',
             'circle-stroke-color': ["case", ["boolean", ["feature-state", "hover"], false], '#595a6d', ["boolean", ["feature-state", "active"], false], '#595a6d', MmtMap.themeStyleExpressions]
-        }   
+        }
     });
 
     map.addLayer({
@@ -150,7 +156,27 @@ map.on('load', function() {
         }
     });
 
+    map.addLayer({
+        'id': 'lines',
+        'source': 'interactive',
+        'source-layer': 'lines',
+        'type': 'line',
+        'paint': {
+            'line-color': ["case", ["boolean", ["feature-state", "hover"], false], '#595a6d', ["boolean", ["feature-state", "active"], false], '#595a6d', MmtMap.themeStyleExpressions],
+            'line-width': ["interpolate", ["linear"], ["zoom"], 
+                15.5, ['*', 5, ['get', 'weight']],
+                16.5, ['*', 10, ['get', 'weight']],
+                17.5, ['*', 20, ['get', 'weight']], 
+                18.5, ['*', 40, ['get', 'weight']]
+            ],
+            'line-opacity': ["case", ["boolean", ["feature-state", "hover"], false], 0.95, ["boolean", ["feature-state", "active"], false], 0.95, 0.7],
+        },
+        'layout': {
+            'line-cap': 'round'
+        }
+    });
 
+    
     map.addLayer({
         'id': 'points_labels',
         'source': 'interactive',
@@ -159,7 +185,7 @@ map.on('load', function() {
         'layout': {
             'symbol-placement': 'point',
             'text-field': ['get', 'name'],
-            'text-font': ['Libre Baskerville Regular'],
+            'text-font': ['Open Sans Regular'],
             'text-size': [
                 'interpolate', ['linear'], ['zoom'],
                 14, ['*', 8, ['get', 'weight']],
@@ -173,7 +199,7 @@ map.on('load', function() {
             'text-halo-color': 'rgba(255,255,255,0.8)',
             'text-halo-width': ['*', 2, ['get', 'weight']],
             'text-opacity': ["interpolate", ["linear"], ["zoom"],
-                16.5, 0,
+                9.5, 0.5,
                 18.5, 1
             ]
         }
@@ -187,7 +213,7 @@ map.on('load', function() {
         'layout': {
             'symbol-placement': 'point',
             'text-field': ['get', 'name'],
-            'text-font': ['Libre Baskerville Regular'],
+            'text-font': ['Open Sans Regular'],
             'text-size': [
                 'interpolate', ['linear'], ['zoom'],
                 14, ['*', 8, ['get', 'weight']],
@@ -202,7 +228,7 @@ map.on('load', function() {
             'text-halo-color': 'rgba(255,255,255,0.8)',
             'text-halo-width': ['*', 2, ['get', 'weight']],
             'text-opacity': ["interpolate", ["linear"], ["zoom"],
-                16.5, 0,
+                12.5, 0.5,
                 18.5, 1
             ]
         }
@@ -210,7 +236,9 @@ map.on('load', function() {
 });
 
 
-// Hover interactions
+// Enable interactions
+
+// Polygons
 
 map.on('mousemove', 'polygons', function(e) {
     if (MmtMap.hoverInteractions.touch == false) {
@@ -230,6 +258,8 @@ map.on('mouseleave', 'polygons', function() {
     MmtMap.hoverInteractions.smallPopup.remove();
 });
 
+// Points
+
 map.on('mousemove', 'points', function(e) {
     if (MmtMap.hoverInteractions.touch == false) {
         MmtMap.hoverInteractions.togglePopup('points');
@@ -248,6 +278,30 @@ map.on('mouseleave', 'points', function() {
     MmtMap.hoverInteractions.smallPopup.remove();
 });
 
+
+// Lines
+
+map.on('mousemove', 'lines', function(e) {
+    if (MmtMap.hoverInteractions.touch == false) {
+        MmtMap.hoverInteractions.togglePopup('lines');
+        feature = e.features[0];
+        MmtMap.hoverInteractions.hoverFeatureId = e.features[0].properties.id;
+        MmtMap.hoverInteractions.addHoverProps('interactive', 'lines', feature, MmtMap.hoverInteractions.hoverFeatureId, e.lngLat);
+    }
+});
+
+map.on('mouseleave', 'lines', function() {
+    if (MmtMap.hoverInteractions.hoverFeatureId) {
+        map.setFeatureState({source: 'interactive', sourceLayer: 'lines', id: MmtMap.hoverInteractions.hoverFeatureId}, {hover: false});
+    }
+    MmtMap.hoverInteractions.hoverFeatureId = null;
+    map.getCanvas().style.cursor = '';
+    MmtMap.hoverInteractions.smallPopup.remove();
+});
+
+
+// Click interactions
+
 map.on('click', 'points', function(e) {
     MmtMap.hoverInteractions.togglePopup('points');
     MmtMap.clickInteractions.clickFeature('interactive', 'points', e.features[0], e.features[0].properties.id, e.lngLat);
@@ -256,6 +310,11 @@ map.on('click', 'points', function(e) {
 map.on('click', 'polygons', function(e) {
     MmtMap.hoverInteractions.togglePopup('polygons');
     MmtMap.clickInteractions.clickFeature('interactive', 'polygons', e.features[0], e.features[0].properties.id, e.lngLat);
+});
+
+map.on('click', 'lines', function(e) {
+    MmtMap.hoverInteractions.togglePopup('lines');
+    MmtMap.clickInteractions.clickFeature('interactive', 'lines', e.features[0], e.features[0].properties.id, e.lngLat);
 });
 
 

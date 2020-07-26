@@ -16,10 +16,12 @@
 
 // Instantiate a global MmtMap object that will deal with everything related to map interactions and data. Further methods and properties for dealing with hover interactions, click interactions, filtering and search are added in interactionHandler.js, filters.js and search.js.
 
+mapboxgl.accessToken = '{{ config.MAPBOX_KEY }}';
+
 const MmtMap = {
 	
 	settings: {
-		mapCenter: {{ map_center|safe }},
+		mapCenter: [{{ config.MAP_CENTER_LONGITUDE }}, {{ config.MAP_CENTER_LATITUDE }}],
 		zoom: {{ config.ZOOM }},
 		maxZoom: {{ config.MAX_ZOOM }},
 		minZoom: {{ config.MIN_ZOOM }},
@@ -44,15 +46,35 @@ const MmtMap = {
         ['==', ['to-number', ['get', 'theme_id']], {{ theme.id }}], 
         '{{ theme.color }}',
         {% endfor %}
-        'green'
-    ]
+        '#44a3fc'
+    ],
+
+    addStyle: function() {
+
+    	// Loads the correct map style source depending on whether the user is using a link to an external map style or has uploaded a file
+
+		let baseMapStyleUrl = '{{ config.BASE_MAP_STYLE_URL|safe }}';
+
+		let baseMapStyleFile = '{{ config.BASE_MAP_STYLE_FILE }}';
+
+		{% get_media_prefix as MEDIA_URL %}
+
+		if (baseMapStyleFile != 'default.json') {
+			MmtMap.style = '{{ MEDIA_URL}}' + baseMapStyleFile;
+		} else {
+			MmtMap.style = baseMapStyleUrl;
+		}
+
+	},
+
+	baseMapStyleKey: '{{ config.MAPTILER_KEY }}',
+
+	switchableLayers: '{{ config.SWITCHABLE_LAYERS }}'.split(',')
+
 }
 
-const baseMapStyleUrl = '{{ config.BASE_MAP_STYLE }}';
 
-const baseMapStyleKey = '{{ config.BASE_MAP_STYLE_KEY}}';
 
-const switchableLayers = '{{ config.SWITCHABLE_LAYERS }}'.split(',');
 
 </script>
 

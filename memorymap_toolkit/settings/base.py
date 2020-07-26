@@ -13,20 +13,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from unipath import Path
 
-BASE_DIR = Path(__file__).ancestor(2)
+BASE_DIR = Path(__file__).ancestor(3)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'xc0#odq6lq^ghf_s_x5gu+17(uzzm1gva@-47+f%^s4&_9dc90'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -38,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.forms',
     # Constance
     'constance.backends.database',
     # Memory Map Toolkit
@@ -51,6 +43,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'constance',
+    'debug_toolbar',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'memorymap_toolkit.urls'
@@ -85,21 +80,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'memorymap_toolkit.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': 'localhost',
-        'NAME': 'memorymap_toolkit',
-        'USER': 'memorymap_toolkit',
-        'PASSWORD': 'memorymap_toolkit'
-    }
-}
 
 
-# Caching. The dynamically-created map tiles are cached using memcached so the load on the database isn't too heavy for larger interactive maps
+
+# Caching. The dynamically-created map tiles are cached using memcached so the load on the database isn't too heavy for larger maps
 
 CACHES = {
     'default': {
@@ -158,6 +142,10 @@ MEDIA_ROOT = BASE_DIR.child('media')
 MEDIA_URL = '/media/'
 
 
+# Forms (for custom map widget)
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 
 ### App-Specific Settings ###
 
@@ -193,111 +181,37 @@ THUMBNAIL_ALIASES = {
 
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
+CONSTANCE_ADDITIONAL_FIELDS = {
+    'image_field': ['django.forms.ImageField', {}],
+    'file_field': ['django.forms.FileField', {}]
+}
+
 CONSTANCE_CONFIG = {
     'SITE_TITLE': ('Memory Map Toolkit', 'The name of your site'),
+    'LOGO_IMAGE': ('default.png', 'You can upload an image to display in the menu bar here', 'image_field'),
     'MAP_CENTER_LATITUDE': (0.0, 'The latitude of the centre point of the map'),
     'MAP_CENTER_LONGITUDE': (0.0, 'The longitude of the centre point of the map'),
     'ZOOM': (15.5, 'The default zoom level of the map'),
     'MIN_ZOOM': (9.5, 'The lowest zoom level of the map'),
     'MAX_ZOOM': (18.4, 'The highest zoom level of the map'),
-    'BASE_MAP_STYLE': ('/static/js/default_map_style.json', 'URL to a MapboxGL Map style'),
-    'BASE_MAP_STYLE_KEY': ('', 'The default map style uses Ordnance Survey Open Zoomstack tiles hosted with Maptiler Cloud. To use these, you need to sign up for a free account and copy your user key here'),
+    'BASE_MAP_STYLE_URL': ('/static/js/default_map_style.json', 'URL to a MapboxGL Map style. If using maps hosted with MapBox, use the style API as documented here: https://docs.mapbox.com/api/maps/#retrieve-a-style'),
+    'BASE_MAP_STYLE_FILE': ('default.json', 'As an alternative to a MapboxGL style link, you can also upload a MapBoxGL StyleJson file to customise the look of your base map. Uploading a file will override the BASE_MAP_STYLE settings', 'file_field'),
+    'MAPTILER_KEY': ('', 'The default map style uses Ordnance Survey Open Zoomstack tiles hosted with Maptiler Cloud. To use these, you need to sign up for a free account and copy your user key here.'),
+    'MAPBOX_KEY': ('', 'If you have uploaded a map style file created in MapBox, put your key here'),
     'SCALE': ('metric', 'The units to use for the map scale widget'),
     'PITCH': (0, 'The pitch of the map viewport'),
     'BEARING': (0, 'The bearing of the map viewport'),
     'WELCOME_MESSAGE': ('Welcome to the Memory Map Toolkit', 'The message that displays when the site loads'),
     'SITE_METADATA': ('', 'Metadata in json-ld format. Adding this will improve the visibility of your site in search results'),
-    'SWITCHABLE_LAYERS': ('', 'A comma-separated list of map layer IDs from your map style definition. This will allow visitors to your site to switch layers on and off from the menu bar. Particularly useful if you are using historic maps.'),
+    'SWITCHABLE_LAYERS': ('', 'A comma-separated list of map layer IDs from your map style. This will allow visitors to your site to switch layers on and off from the menu bar. Particularly useful if you are using raster layers, for example for showing historic maps.'),
+    'CUSTOM_CSS': ('default.css', 'Upload a css file to customise the look of your Memory Map', 'file_field'),
 }
 
 
+# Django Debug Toolbar
 
-
-### Memory Map Toolkit Settings ###
-
-SITE_TITLE = 'Memory Map Toolkit'
-
-MAP_CENTER = {'lat': 54.047220, 'lon': -2.904659}
-
-ZOOM = 15.5
-
-MIN_ZOOM = 9.5
-
-MAX_ZOOM = 18.4
-
-MAX_BOUNDS = []
-
-SCALE = 'metric'
-
-BASE_MAP_STYLE = None
-
-PITCH = 0
-
-BEARING = 0
-
-BASE_MAP_SOURCE = {
-    'Ordnance Survey Open Zoomstack': {
-        'title': 'Ordnance Survey Open Zoomstack',
-        'url': 'https://api.maptiler.com/tiles/uk-openzoomstack/tiles.json?key=fL9NKV06gTKowpkIEnt4',
-        'attribution': '',
-        'type': 'vector'
-    }
-}
-
-RASTER_SOURCES = [
-    {
-        'title': '',
-        'url': '',
-        'attribution': '',
-        'raster_saturation': 0,
-        'raster_contrast': 0,
-        'raster_brightness_min': 0,
-        # Set raster opacity to 0 to hide layer on load.
-        'raster_opacity': 0
-    }
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '10.0.2.15',
+    '10.0.2.2',
 ]
-
-VECTOR_SOURCES = [
-    { 
-        'title': 'Ordnance Survey Open Zoomstack',
-        'url': 'https://api.maptiler.com/tiles/uk-openzoomstack/tiles.json?key=fL9NKV06gTKowpkIEnt4',
-        'attribution': '',
-        'type': 'vector'
-    }
-]
-
-ALLOWED_HOSTS = []
-
-WELCOME_MESSAGE = """
-    <p>Put your site welcome message here.</p>
-"""
-
-# Add schema.org metadata here in json-ld format to improve the visibility of your site in search results
-
-SITE_METADATA = """
-{
-    "@context": "http://schema.org",
-    "@type": "WebSite",
-    "url": "https://jewisheastendmemorymap.org/",
-    "author": {
-        "@context": "http://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "University College London",
-        "address": {
-            "@context": "http://schema.org",
-            "@type": "PostalAddress",
-            "addressCountry": "United Kingdom",
-            "addressLocality": "London",
-            "postalCode": "EC1N 2ST",
-            "streetAddress": "Gower Street, London"
-        }
-    },
-    "about": {
-        "@context": "http://schema.org",
-        "@type": "Place",
-        "name": "Whitechapel"
-    },
-    "description": "A Memory Map of the Jewish East End. Find interviews, photographs, and essays about this now-vanished territory."
-}
-"""
-

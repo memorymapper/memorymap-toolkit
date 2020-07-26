@@ -1,6 +1,7 @@
 # Django Core
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 # Third party Django apps
 from colorful.fields import RGBColorField
@@ -9,6 +10,7 @@ from filer.fields.image import FilerImageField
 from filer.fields.file import FilerFileField
 from ckeditor_uploader.fields import RichTextUploadingField
 from ckeditor.fields import RichTextField
+from taggit.managers import TaggableManager
 
 # Other modules
 import bleach
@@ -18,12 +20,10 @@ import re
 
 
 def feature_directory_path(instance, filename):
-	"""Function to ensure image files will be uploaded to /uploads/features/<feature.id>/filename"""
-	try:
-		feature = instance.feature
-		return 'uploads/features/{0}/{1}'.format(feature.id, filename)
-	except:
-		return 'uploads/features/{0}/{1}'.format(instance.id, filename)
+	if hasattr(instance, 'name'):
+		return 'uploads/features/{0}/{1}'.format(slugify(instance.name), filename)
+	elif hasattr(instance, 'title'):
+		return 'uploads/features/{0}/{1}'.format(slugify(instance.title), filename)
 
 
 class Theme(models.Model):
@@ -46,15 +46,16 @@ class AbstractFeature(models.Model):
 	popup_audio_slug = models.SlugField(max_length=128, blank=True)
 	popup_audio_file = FilerFileField(null=True, blank=True, related_name='%(app_label)s_%(class)s_popup_audio_file', on_delete=models.SET_NULL)
 	weight = models.FloatField(default=1)
+	tags = TaggableManager(blank=True)
+	# When the feature is saved, the tags attached to it are stored as a string so they can be easily serialised as mapbox vector tiles
+	tag_str = models.CharField(max_length=256, blank=True)
+	published = models.BooleanField(default=True)
+
 
 	def get_type(self):
 		return self.__class__.__name__.lower()
 
-	def get_color(self):
-		if self.theme:
-			return self.theme.color
-		else:
-			return ''
+	# The get_*_url functions build the urls which are used in the API representation of a feature
 
 	def get_popup_image_url(self):
 		if self.popup_image:
@@ -84,18 +85,34 @@ class AbstractFeature(models.Model):
 
 
 class Point(AbstractFeature):
- 	"""A point"""
- 	geom = models.PointField(verbose_name='Coordinates')
+	"""A point"""
+	geom = models.PointField(verbose_name='Coordinates')
+
+	def save(self, *args, **kwargs):
+		# Model has to be saved first to access the tags
+		super(Point, self).save(*args, **kwargs)
+		self.tag_str = ', '.join(self.tags.names())
+		super(Point, self).save(*args, **kwargs)
 
 
 class Polygon(AbstractFeature):
- 	"""A polygon"""
- 	geom = models.MultiPolygonField(verbose_name='Geometry')
+	"""A polygon"""
+	geom = models.MultiPolygonField(verbose_name='Geometry')
+
+	def save(self, *args, **kwargs):
+		super(Polygon, self).save(*args, **kwargs)
+		self.tag_str = ', '.join(self.tags.names())
+		super(Polygon, self).save(*args, **kwargs)
 
 
 class Line(AbstractFeature):
- 	"""A line"""
- 	geom = models.MultiLineStringField(verbose_name='Line Geometry')
+	"""A line"""
+	geom = models.MultiLineStringField(verbose_name='Line Geometry')
+
+	def save(self, *args, **kwargs):
+		super(Line, self).save(*args, **kwargs)
+		self.tag_str = ', '.join(self.tags.names())
+		super(Line, self).save(*args, **kwargs)
 
 
 class AbstractAttachment(models.Model):

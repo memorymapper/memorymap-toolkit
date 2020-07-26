@@ -12,7 +12,7 @@ import json
 # Memory Map Toolkit
 from mmt_map.models import Point, Line, Polygon, Theme, Document, Image, AudioFile
 from mmt_pages.models import Page
-from .serializers import PointSerializer, PolygonSerializer, PointDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer
+from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer
 
 
 def feature(request, pk, source_layer):
@@ -29,6 +29,9 @@ def feature(request, pk, source_layer):
 	elif source_layer == 'polygons':
 		poly = Polygon.objects.get(id=pk)
 		serializer = PolygonSerializer(poly)
+	elif source_layer == 'lines':
+		line = Line.objects.get(id=pk)
+		serializer = LineSerializer(line)
 
 	return JsonResponse(serializer.data)
 
@@ -47,6 +50,9 @@ def feature_detail(request, pk, source_layer):
 	elif source_layer == 'polygons':
 		polygon = Polygon.objects.get(id=pk)
 		serializer = PolygonDetailSerializer(polygon)
+	elif source_layer == 'lines':
+		line = Line.objects.get(id=pk)
+		serializer = LineDetailSerializer(line)
 
 	return JsonResponse(serializer.data)
 
@@ -59,21 +65,22 @@ def feature_attachments(request, pk, source_layer):
 
 	if source_layer == 'points':
 		feature = get_object_or_404(Point, id=pk)
-		documents = Document.objects.filter(point=feature)
-		images = Image.objects.filter(point=feature)
-		audio = AudioFile.objects.filter(point=feature)
+		documents = Document.objects.filter(point=feature, published=True)
+		images = Image.objects.filter(point=feature, published=True)
+		audio = AudioFile.objects.filter(point=feature, published=True)
 		feature_serializer = PointSerializer(feature)
 	elif source_layer == 'polygons':
 		feature = get_object_or_404(Polygon, id=pk)
-		documents = Document.objects.filter(polygon=feature)
-		images = Image.objects.filter(polygon=feature)
-		audio = AudioFile.objects.filter(polygon=feature)
+		documents = Document.objects.filter(polygon=feature, published=True)
+		images = Image.objects.filter(polygon=feature, published=True)
+		audio = AudioFile.objects.filter(polygon=feature, published=True)
 		feature_serializer = PolygonSerializer(feature)
 	elif source_layer == 'lines':
 		feature = get_object_or_404(Line, id=pk)
-		documents = Document.objects.filter(line=feature)
-		images = Image.objects.filter(line=feature)
-		audio = AudioFile.objects.filter(line=feature)
+		documents = Document.objects.filter(line=feature, published=True)
+		images = Image.objects.filter(line=feature, published=True)
+		audio = AudioFile.objects.filter(line=feature, published=True)
+		feature_serializer = LineSerializer(feature)
 
 	attachments_base = {'documents': documents, 'images': images, 'audio': audio}
 

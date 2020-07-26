@@ -1,0 +1,537 @@
+{
+  "version": 8,
+  "name": "default modified",
+  "metadata": {"maputnik:renderer": "mbgljs"},
+  "sources": {
+    "Ordnance Survey Open Zoomstack": {
+      "title": "Ordnance Survey Open Zoomstack",
+      "attribution": "",
+      "type": "vector",
+      "maxzoom": 14,
+      "tiles": ["https://api.os.uk/maps/vector/v1/vts/tile/{z}/{y}/{x}.pbf?srs=3857&key=rcH2BssyR66Bxr7rStSLWDKsV1m9kj6r"]
+    }
+  },
+  "glyphs": "http://glfonts.lukasmartinelli.ch/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {"background-color": "#77BDE7"}
+    },
+    {
+      "id": "land",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "GB_land",
+      "paint": {"fill-color": "#f1f1f1"}
+    },
+    {
+      "id": "national_parks",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "National_parks",
+      "paint": {"fill-color": "rgba(212, 235, 123, 0.68)"}
+    },
+    {
+      "id": "greenspaces",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Greenspace:2",
+      "paint": {"fill-color": "rgba(212, 235, 123, 0.68)"}
+    },
+    {
+      "id": "urban_areas",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Urban_areas",
+      "paint": {"fill-color": "rgba(220, 220, 220, 1)"}
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Local_buildings",
+      "paint": {"fill-color": "#d1d1d1", "fill-outline-color": "#a6a6a6"}
+    },
+    {
+      "id": "surfacewater",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Surfacewater",
+      "paint": {"fill-color": "rgba(119, 189, 231, 1)"}
+    },
+    {
+      "id": "foreshore",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Foreshore",
+      "paint": {"fill-color": "#77BDE7"}
+    },
+    {
+      "id": "contours",
+      "type": "line",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Contours",
+      "paint": {"line-color": "rgba(121, 121, 121, 0.5)", "line-width": 0.25}
+    },
+    {
+      "id": "roads_case",
+      "type": "line",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "layout": {"line-cap": "butt"},
+      "paint": {
+        "line-color": "#c1c1c1",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          14,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            2,
+            ["B Road", "Local"],
+            2,
+            2
+          ],
+          15,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            5,
+            ["B Road", "Local"],
+            3,
+            2
+          ],
+          16,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            9,
+            ["B Road", "Local"],
+            5,
+            5
+          ],
+          17,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            17,
+            ["B Road", "Local"],
+            9,
+            5
+          ],
+          18,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            33,
+            ["B Road", "Local"],
+            17,
+            17
+          ],
+          19,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            65,
+            ["B Road", "Local"],
+            33,
+            17
+          ],
+          20,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            129,
+            ["B Road", "Local"],
+            65,
+            13
+          ]
+        ]
+      }
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "layout": {"line-cap": "butt"},
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          14,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            1,
+            ["B Road", "Local"],
+            1,
+            1
+          ],
+          15,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            4,
+            ["B Road", "Local"],
+            2,
+            1
+          ],
+          16,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            8,
+            ["B Road", "Local"],
+            4,
+            4
+          ],
+          17,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            16,
+            ["B Road", "Local"],
+            8,
+            4
+          ],
+          18,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            32,
+            ["B Road", "Local"],
+            16,
+            16
+          ],
+          19,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            64,
+            ["B Road", "Local"],
+            32,
+            16
+          ],
+          20,
+          [
+            "match",
+            ["get", "type"],
+            ["Primary", "A Road"],
+            128,
+            ["B Road", "Local"],
+            64,
+            12
+          ]
+        ]
+      }
+    },
+    {
+      "id": "a_roads_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "CartographicText",
+      "filter": ["==", "type", "A Road"],
+      "layout": {
+        "symbol-placement": "line-center",
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-transform": "uppercase",
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 6, 18, 16]
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "primary_roads_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "filter": ["==", "type", "Primary"],
+      "layout": {
+        "symbol-placement": "line-center",
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-transform": "uppercase",
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 6, 18, 16]
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "b_roads_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "filter": ["==", "type", "B Road"],
+      "layout": {
+        "symbol-placement": "line-center",
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 4, 18, 12]
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "local_roads_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "filter": ["==", "type", "Local"],
+      "layout": {
+        "symbol-placement": "line-center",
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 4, 18, 12]
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "minor_roads_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Roads",
+      "filter": ["==", "type", "Minor"],
+      "layout": {
+        "symbol-placement": "line-center",
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 4, 18, 12]
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "railways",
+      "type": "line",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "Railways",
+      "filter": ["==", "type", "Multi Track"],
+      "layout": {"line-cap": "round"},
+      "paint": {
+        "line-color": "#706f6f",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 14, 1, 16, 2, 18, 4]
+      }
+    },
+    {
+      "id": "area_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "names",
+      "filter": ["==", "type", "Suburban Area"],
+      "layout": {
+        "symbol-placement": "point",
+        "text-field": ["get", "name1"],
+        "text-font": ["Open Sans Regular"],
+        "text-transform": "uppercase",
+        "text-size": {"stops": [[10, 4], [20, 16]]}
+      },
+      "paint": {"text-halo-color": "rgba(255,255,255,1)", "text-halo-width": 1}
+    },
+    {
+      "id": "town_labels",
+      "type": "symbol",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "CartographicText",
+      "filter": ["all", ["==", "type", "City"]],
+      "layout": {
+        "text-field": ["get", "name1"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": {"stops": [[10, 12], [20, 64]]}
+      },
+      "paint": {
+        "text-halo-color": "rgba(255, 255, 255, 1)",
+        "text-halo-width": 1
+      }
+    },{
+
+      "id": "OS/Roads/label/Motorway 2800-22400",
+
+      "type": "symbol",
+
+      "source": "Ordnance Survey Open Zoomstack",
+
+      "source-layer": "Roads/label",
+
+      "filter": [
+
+        "==",
+
+        "_label_class",
+
+        0
+
+      ],
+
+      "minzoom": 13,
+
+      "maxzoom": 16,
+
+      "layout": {
+
+        "symbol-placement": "line",
+
+        "symbol-spacing": 1000,
+
+        "text-font": [
+
+          "Open Sans Regular"
+
+        ],
+
+        "text-size": 13,
+
+        "text-letter-spacing": 0.1,
+
+        "text-field": "{_name}",
+
+        "text-optional": true
+
+      },
+
+      "paint": {
+
+        "text-color": "#FCFDFF",
+
+        "text-halo-color": "#08B7E7",
+
+        "text-halo-width": 1.5
+
+      }
+
+    },
+
+    {
+
+      "id": "OS/Roads/label/Motorway 22400-179200",
+
+      "type": "symbol",
+
+      "source": "Ordnance Survey Open Zoomstack",
+
+      "source-layer": "Roads/label",
+
+      "filter": [
+
+        "==",
+
+        "_label_class",
+
+        1
+
+      ],
+
+      "minzoom": 10,
+
+      "maxzoom": 13,
+
+      "layout": {
+
+        "symbol-placement": "line",
+
+        "symbol-spacing": 1000,
+
+        "text-font": [
+
+          "Open Sans Regular"
+
+        ],
+
+        "text-size": 12,
+
+        "text-letter-spacing": 0.1,
+
+        "text-field": "{_name}",
+
+        "text-optional": true
+
+      },
+
+      "paint": {
+
+        "text-color": "#FCFDFF",
+
+        "text-halo-color": "#08B7E7",
+
+        "text-halo-width": 1.5
+
+      }
+
+    },
+
+    {
+
+      "id": "OS/Roads/label/Motorway 179200-2867200",
+
+      "type": "symbol",
+
+      "source": "Ordnance Survey Open Zoomstack",
+
+      "source-layer": "Roads/label",
+
+      "filter": [
+
+        "==",
+
+        "_label_class",
+
+        2
+
+      ],
+
+      "minzoom": 6,
+
+      "maxzoom": 10,
+
+      "layout": {
+
+        "symbol-placement": "line",
+
+        "symbol-spacing": 1000,
+
+        "text-font": [
+
+          "Open Sans Regular"
+
+        ],
+
+        "text-size": 11,
+
+        "text-letter-spacing": 0.1,
+
+        "text-field": "{_name}",
+
+        "text-optional": true
+
+      },
+
+      "paint": {
+
+        "text-color": "#FCFDFF",
+
+        "text-halo-color": "#08B7E7",
+
+        "text-halo-width": 1.5
+
+      }
+
+    }
+  
+  ],
+  "id": "6z5n8f39q"
+}

@@ -1,0 +1,29 @@
+{
+  "version": 8,
+  "name": "default modified",
+  "metadata": {"maputnik:renderer": "mbgljs"},
+  "sources": {
+    "Ordnance Survey Open Zoomstack": {
+      "title": "Ordnance Survey Open Zoomstack",
+      "attribution": "",
+      "type": "vector",
+      "tiles": ["https://api.os.uk/maps/vector/v1/vts/tile/{z}/{y}/{x}.pbf?srs=3857&key=rcH2BssyR66Bxr7rStSLWDKsV1m9kj6r"],
+      "maxzoom": 14
+    }
+  },
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {"background-color": "#77BDE7"}
+    },
+    {
+      "id": "land",
+      "type": "fill",
+      "source": "Ordnance Survey Open Zoomstack",
+      "source-layer": "GB_land",
+      "paint": {"fill-color": "#f1f1f1"}
+    }],
+  "id": "6z5n8f39q"
+}

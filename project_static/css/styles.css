@@ -8,7 +8,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Libre Baskerville', serif;
+	font-family: 'Nunito Sans', sans-serif;
 }
 
 h2 {
@@ -63,10 +63,8 @@ blockquote {
 }
 
 .navbar {
-	/*margin-left: -15px;
-	margin-right: -15px;*/
-	font-family: 'Libre Baskerville', serif;
 	z-index: 6;
+	border-bottom: 1px solid #9f9f9f;
 }
 
 .full_height {

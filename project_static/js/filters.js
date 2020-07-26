@@ -2,7 +2,7 @@
 
 $('.theme').click(function(e) {
     e.preventDefault();
-    var key = $(this).data('key');
+    let key = $(this).data('key');
     if (key != undefined) {
         
         map.setFilter('polygons', ['==', ['get', 'theme_id'], key]);
@@ -17,7 +17,7 @@ $('.theme').click(function(e) {
             $(this).css('color', color);
         });
 
-        var color = $(this).data('color');
+        let color = $(this).data('color');
         $(this).css('background-color', color);
         $(this).css('color', '#e3e3e3');
 
@@ -28,7 +28,7 @@ $('.theme').click(function(e) {
         map.setFilter('points_labels');
         map.setFilter('polygon_labels');
         $('.theme').each(function() {
-            var color = $(this).data('color');
+            let color = $(this).data('color');
             $(this).css('background-color', 'transparent');
             $(this).css('color', color);
         });

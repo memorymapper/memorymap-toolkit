@@ -16,28 +16,28 @@ from mmt_pages.models import Page
 class AbstractFeatureSerializer(GeoFeatureModelSerializer):
 	feature_type = serializers.CharField(source='get_type', read_only=True)
 	theme = serializers.StringRelatedField()
-	color = serializers.CharField(source='get_color', read_only=True)
 	popup_image = serializers.CharField(source='get_popup_image_url', read_only=True)
 	popup_audio_file = serializers.CharField(source='get_popup_audio_file_url', read_only=True)
 	banner_image = serializers.CharField(source='get_banner_image_url', read_only=True)
-
-	class Meta:
-		model = AbstractFeature
-		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'color', 'popup_audio_file', 'banner_image_copyright', 'popup_audio_slug',)
-
 
 class PointSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Point
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'color', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
 
 class PolygonSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Polygon
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'color', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+
+class LineSerializer(AbstractFeatureSerializer):
+	class Meta:
+		model = Line
+		geo_field = 'geom'
+		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -75,8 +75,17 @@ class PolygonDetailSerializer(serializers.ModelSerializer):
 	polygon_audiofiles = AudioFileSerializer(many=True, read_only=True)
 
 	class Meta:
-		model = Point
+		model = Polygon
 		fields = ('name', 'polygon_documents', 'polygon_images', 'polygon_audiofiles', 'thumbnail_copyright',)
+
+class LineDetailSerializer(serializers.ModelSerializer):
+	line_documents = DocumentSerializer(many=True, read_only=True)
+	line_images = ImageSerializer(many=True, read_only=True)
+	line_audiofiles = AudioFileSerializer(many=True, read_only=True)
+
+	class Meta:
+		model = Line
+		fields = ('name', 'line_documents', 'line_images', 'line_audiofiles', 'thumbnail_copyright',)
 
 
 # Other serializers

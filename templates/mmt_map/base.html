@@ -12,8 +12,8 @@
 		<link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i|Nunito+Sans:300,300i" rel="stylesheet"> 
 
 		<!-- Mapbox GL -->
-		<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js'></script>
-		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css' rel='stylesheet' />
+		<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js'></script>
+		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css' rel='stylesheet' />
 
 		<!-- Turf -->
 		<!--<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>-->
@@ -22,6 +22,11 @@
 		<!-- Custom Styles -->
 		{% load static %}
 		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+		{% if config.CUSTOM_CSS != 'default.css' %}
+		{% get_media_prefix as MEDIA_URL %}
+		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ config.CUSTOM_CSS }}">
+		{% endif %}
 
 		<!-- Howler -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.core.min.js"></script>
@@ -38,9 +43,15 @@
 
 	<body>
 		<div class="container-fluid full_height site_container">
-			<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<nav class="navbar navbar-expand-lg navbar-light bg-light">
+				
+				{% if config.LOGO_IMAGE == 'default.png' %}
 				<a class="navbar-brand d-none d-sm-block" href="#">{{ config.SITE_TITLE }}</a>
 				<a class="navbar-brand d-sm-none d-block" href="#">{{ config.SITE_TITLE }}</a>
+				{% else %}
+				<a class="navbar-brand d-none d-sm-block" href="/"><img src="{{ MEDIA_URL }}{{ config.LOGO_IMAGE }}" alt="{{ config.SITE_TITLE }}" width="auto" height="30" /></a>
+				<a class="navbar-brand d-sm-none d-block" href="/"><img src="{{ MEDIA_URL }}{{ config.LOGO_IMAGE }}" alt="{{ config.SITE_TITLE }}" width="auto" height="30" /></a>
+				{% endif %}
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 				</button>
@@ -63,7 +74,7 @@
 						</li>
 					</ul>
 					<form class="form-inline my-2 my-lg-0">
-						<input class="form-control mr-sm-2" placeholder="Search sites" aria-label="Search" id="map_search">
+						<input class="form-control mr-sm-2" placeholder="Search visible sites" aria-label="Search" id="map_search">
 					</form>
 				</div>
 			</nav>

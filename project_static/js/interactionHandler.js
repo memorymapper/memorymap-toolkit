@@ -1,5 +1,6 @@
 // Hover interactions
 
+
 MmtMap.hoverInteractions = {
 	
 	hoverFeatureId: null,

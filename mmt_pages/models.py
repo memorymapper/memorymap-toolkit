@@ -6,6 +6,7 @@ from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 
 # Other modules
+import bleach
 
 class Page(models.Model):
 	"""An HTML page"""
@@ -22,3 +23,8 @@ class Page(models.Model):
 
 	def get_absolute_url(self):
 		return reverse('page', args=[self.slug])
+
+	def save(self, *args, **kwargs):
+		# Clean the html
+		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target']}, styles=['width', 'height'])
+		super(Page, self).save(*args, **kwargs)

@@ -6,6 +6,7 @@ from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.db import connection
 from django.views.decorators.cache import cache_page
+from django.contrib.gis.geos import GEOSGeometry
 
 # Other Python modules
 import json 
@@ -27,7 +28,7 @@ def index(request):
 	themes = Theme.objects.all()
 	pages = Page.objects.all().order_by('order')
 
-	return render(request, 'mmt_map/index.html', {'themes': themes, 'config': config})
+	return render(request, 'mmt_map/index.html', {'themes': themes})
 
 
 def feature_detail(request, pk, source_layer):
@@ -65,11 +66,10 @@ def feature_detail(request, pk, source_layer):
 	return render(request, 'mmt_map/feature.html', {'feature': feature, 'attachments': attachments, 'host': host, 'today': today })
 
 
-@cache_page(60 * 15)
+# @cache_page(60 * 15)
 def vector_tile(request, z, x, y, tile_format):
 	"""
-	Returns a vector tile. Uses raw SQL because GeoDjango can't return vector tiles (though to my mind it should).
-	TODO: The tiles should be cached to disk and regenerated only when the features are changed. This will stop the database being spammed so heavily.
+	Returns a vector tile. Uses raw SQL because GeoDjango can't return vector tiles (though to my mind it should). Tiles are cached so as to make large maps more performant, at the expense of updates not being visible immediately.
 	"""
 	tile = {
 		'zoom': int(z),
@@ -83,6 +83,7 @@ def vector_tile(request, z, x, y, tile_format):
 
 	env = tileToEnvelope(tile)
 	env = envelopeToBoundsSQL(env)
+
 	
 	sql_tmpl = """
 		WITH 
@@ -94,7 +95,7 @@ def vector_tile(request, z, x, y, tile_format):
 			SELECT ST_AsMVTGeom(ST_Transform(t.{geomColumn}, 3857), bounds.b2d) AS geom, 
 				   {attrColumns}
 			FROM {table} t, bounds
-			WHERE ST_Intersects(t.{geomColumn}, ST_Transform(bounds.geom, {srid}))
+			WHERE ST_Intersects(t.{geomColumn}, ST_Transform(bounds.geom, {srid})) AND published = TRUE
 		) 
 		SELECT ST_AsMVT(mvtgeom.*, {layerName}) FROM mvtgeom
 		"""
@@ -125,7 +126,7 @@ def vector_tile(request, z, x, y, tile_format):
 	# Loop over the layers and concatenate them into the response
 
 	for layer, attrs in layers.items():
-		sql = sql_tmpl.format(env=env, attrColumns='id, name, weight, theme_id', srid='4326', geomColumn='geom', table=attrs['table'], layerName=attrs['layerName'])
+		sql = sql_tmpl.format(env=env, attrColumns='id, name, weight, theme_id, tag_str', srid='4326', geomColumn='geom', table=attrs['table'], layerName=attrs['layerName'])
 
 		with connection.cursor() as cursor:
 			cursor.execute(sql)
@@ -133,7 +134,6 @@ def vector_tile(request, z, x, y, tile_format):
 	
 		response.write(pbf.tobytes())
 	
-
 	# Return the tile
 
 	return response
@@ -142,13 +142,14 @@ def vector_tile(request, z, x, y, tile_format):
 def tile_json(request):
 	"""Returns a tileJSON object describing the vector tiles hosted in the Memory Map toolkit database."""
 	
+	scheme = request.scheme
 	host = request.get_host()
 
 	json = {
 		'tileJSON': '2.2.0',
-		'name': 'Memory Mapper Interactive Features',
+		'name': 'Memory Map Toolkit Interactive Features',
 		'tiles': [
-			'http://' + host + '/tiles/{z}/{x}/{y}.pbf'
+			scheme + '://' + host + '/tiles/{z}/{x}/{y}.pbf'
 		],
 	}
 
