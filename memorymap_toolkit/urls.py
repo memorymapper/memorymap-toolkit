@@ -34,9 +34,9 @@ polygon_dict = {
     'queryset': Polygon.objects.filter(published=True)
 }
 
-admin.site.site_header = "MemoryMapper Admin"
-admin.site.site_title = "MemoryMapper Admin"
-admin.site.index_title = "Welcome to MemoryMapper"
+admin.site.site_header = "Memory Map Toolkit Admin"
+admin.site.site_title = "Memory Map Toolkit Admin"
+admin.site.index_title = "Welcome to the Memory Map Toolkit"
 
 urlpatterns = [
     path('memorymapper-admin/', admin.site.urls),

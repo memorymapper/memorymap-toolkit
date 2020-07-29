@@ -65,8 +65,8 @@ def feature_detail(request, pk, source_layer):
 
 	return render(request, 'mmt_map/feature.html', {'feature': feature, 'attachments': attachments, 'host': host, 'today': today })
 
-
-# @cache_page(60 * 15)
+# Vector tiles are optionally cached to stop the database being spammed to heavily.
+@cache_page(60 * config.CACHE_TIMEOUT)
 def vector_tile(request, z, x, y, tile_format):
 	"""
 	Returns a vector tile. Uses raw SQL because GeoDjango can't return vector tiles (though to my mind it should). Tiles are cached so as to make large maps more performant, at the expense of updates not being visible immediately.
