@@ -2,6 +2,7 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.db.models.signals import m2m_changed
 
 # Third party Django apps
 from colorful.fields import RGBColorField
@@ -11,6 +12,7 @@ from filer.fields.file import FilerFileField
 from ckeditor_uploader.fields import RichTextUploadingField
 from ckeditor.fields import RichTextField
 from taggit.managers import TaggableManager
+from taggit.models import Tag
 
 # Other modules
 import bleach
@@ -20,6 +22,7 @@ import re
 
 
 def feature_directory_path(instance, filename):
+	"""Helper function to ensure images are saved in a sensible place in the uploads directory"""
 	if hasattr(instance, 'name'):
 		return 'uploads/features/{0}/{1}'.format(slugify(instance.name), filename)
 	elif hasattr(instance, 'title'):
@@ -91,8 +94,8 @@ class Point(AbstractFeature):
 	def save(self, *args, **kwargs):
 		# Model has to be saved first to access the tags
 		super(Point, self).save(*args, **kwargs)
-		self.tag_str = ', '.join(self.tags.names())
-		super(Point, self).save(*args, **kwargs)
+		#self.tag_str = ', '.join(self.tags.names())
+
 
 
 class Polygon(AbstractFeature):
@@ -113,6 +116,22 @@ class Line(AbstractFeature):
 		super(Line, self).save(*args, **kwargs)
 		self.tag_str = ', '.join(self.tags.names())
 		super(Line, self).save(*args, **kwargs)
+
+
+def tags_changed(sender, **kwargs):
+	"""Helper function to update the tag_str field on features when tags are changed."""
+	action = kwargs['action']
+	instance = kwargs['instance']
+	model = kwargs['model']
+
+	if (model == Tag):
+		tags = ', '.join(instance.tags.names())
+		instance.tag_str = tags
+		instance.save()
+
+m2m_changed.connect(tags_changed, sender=Point.tags.through)
+m2m_changed.connect(tags_changed, sender=Line.tags.through)
+m2m_changed.connect(tags_changed, sender=Polygon.tags.through)
 
 
 class AbstractAttachment(models.Model):

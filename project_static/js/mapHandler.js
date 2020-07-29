@@ -45,8 +45,6 @@ $.get(MmtMap.style, function(data) {
 
     let style = data;
 
-    console.log('style');
-
     // If the default map style is being used, add the key to the sources and glyphs urls
     if (MmtMap.style == '/static/js/default_map_style.json') {
         style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + MmtMap.baseMapStyleKey;
@@ -81,6 +79,14 @@ $.get(MmtMap.style, function(data) {
 
 });
 
+// Add geolocation control
+
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
 
 // Add the navigation and scale controls
 
@@ -97,6 +103,29 @@ let scale = new mapboxgl.ScaleControl({
 map.addControl(scale, 'bottom-left');
 
 map.addControl(nav, 'top-right');
+
+
+// Add the Memorymapper logo control
+
+class MemorymapperLogoControl {
+    onAdd(map) {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl';
+        this._container.innerHTML = '<a href="https://memorymapper.github.io" target="_blank"><img src="/static/img/memorymapper-logo.png" alt="MemoryMapper Logo" style="height: 20px; width: auto;"></a>';
+        return this._container;
+    }
+     
+    onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+}
+
+let logoControl = new MemorymapperLogoControl();
+
+map.addControl(logoControl, 'bottom-right');
+
 
 
 // Then load the interactive features
@@ -185,7 +214,7 @@ map.on('load', function() {
         'layout': {
             'symbol-placement': 'point',
             'text-field': ['get', 'name'],
-            'text-font': ['Open Sans Regular'],
+            'text-font': [MmtMap.settings.font],
             'text-size': [
                 'interpolate', ['linear'], ['zoom'],
                 14, ['*', 8, ['get', 'weight']],
@@ -213,7 +242,7 @@ map.on('load', function() {
         'layout': {
             'symbol-placement': 'point',
             'text-field': ['get', 'name'],
-            'text-font': ['Open Sans Regular'],
+            'text-font': [MmtMap.settings.font],
             'text-size': [
                 'interpolate', ['linear'], ['zoom'],
                 14, ['*', 8, ['get', 'weight']],

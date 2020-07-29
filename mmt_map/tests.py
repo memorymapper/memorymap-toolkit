@@ -185,7 +185,3 @@ class ImageModelTestCase(AbstractAttachmentModelTestCase):
 
 class AudioFileModelTestCase(AbstractAttachmentModelTestCase):
 	"""Documents"""
-
-
-		
-# View Tests

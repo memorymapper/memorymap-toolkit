@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.forms',
+    'django.contrib.sitemaps',
     # Constance
     'constance.backends.database',
     # Memory Map Toolkit
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'constance',
     'debug_toolbar',
     'taggit',
+    'analytical',
 ]
 
 MIDDLEWARE = [
@@ -195,18 +197,24 @@ CONSTANCE_CONFIG = {
     'MIN_ZOOM': (9.5, 'The lowest zoom level of the map'),
     'MAX_ZOOM': (18.4, 'The highest zoom level of the map'),
     'BASE_MAP_STYLE_URL': ('/static/js/default_map_style.json', 'URL to a MapboxGL Map style. If using maps hosted with MapBox, use the style API as documented here: https://docs.mapbox.com/api/maps/#retrieve-a-style'),
-    'BASE_MAP_STYLE_FILE': ('default.json', 'As an alternative to a MapboxGL style link, you can also upload a MapBoxGL StyleJson file to customise the look of your base map. Uploading a file will override the BASE_MAP_STYLE settings', 'file_field'),
-    'MAPTILER_KEY': ('', 'The default map style uses Ordnance Survey Open Zoomstack tiles hosted with Maptiler Cloud. To use these, you need to sign up for a free account and copy your user key here.'),
+    'BASE_MAP_STYLE_FILE': ('default.json', 'As an alternative to a MapboxGL style link, you can also upload a MapBoxGL StyleJson file to customise the look of your base map. Uploading a file will override the BASE_MAP_STYLE_URL setting.', 'file_field'),
+    'MAPTILER_KEY': ('', 'The default map style uses Ordnance Survey Open Zoomstack tiles hosted with Maptiler Cloud. To use these, you need to sign up for a free account at https://www.maptiler.com/cloud/ and put your user key here'),
     'MAPBOX_KEY': ('', 'If you have uploaded a map style file created in MapBox, put your key here'),
     'SCALE': ('metric', 'The units to use for the map scale widget'),
     'PITCH': (0, 'The pitch of the map viewport'),
     'BEARING': (0, 'The bearing of the map viewport'),
-    'WELCOME_MESSAGE': ('Welcome to the Memory Map Toolkit', 'The message that displays when the site loads'),
+    'WELCOME_MESSAGE': ('Welcome to MemoryMapper', 'The message that displays when the site loads'),
     'SITE_METADATA': ('', 'Metadata in json-ld format. Adding this will improve the visibility of your site in search results'),
     'SWITCHABLE_LAYERS': ('', 'A comma-separated list of map layer IDs from your map style. This will allow visitors to your site to switch layers on and off from the menu bar. Particularly useful if you are using raster layers, for example for showing historic maps.'),
     'CUSTOM_CSS': ('default.css', 'Upload a css file to customise the look of your Memory Map', 'file_field'),
+    'FEATURE_LABEL_FONT': ('Open Sans Regular', 'The font to use for the interactive feature labels. Make sure this is in your map style\'s font stack (see https://docs.mapbox.com/mapbox-gl-js/style-spec/glyphs/)'),
 }
 
+CONSTANCE_CONFIG_FIELDSETS = {
+    'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'SITE_METADATA'),
+    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING'),
+    'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
+}
 
 # Django Debug Toolbar
 

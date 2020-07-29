@@ -1,6 +1,8 @@
+{% load analytical %}
 <!doctype html>
 	<html lang="en">
-		<head>
+	<head>
+		{% analytical_head_top %}
 		<!-- Required meta tags -->
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -22,6 +24,7 @@
 		<!-- Custom Styles -->
 		{% load static %}
 		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+		<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
 		{% if config.CUSTOM_CSS != 'default.css' %}
 		{% get_media_prefix as MEDIA_URL %}
@@ -37,11 +40,14 @@
 		<script type="application/ld+json">	
 			{{ config.SITE_METADATA|safe }}
 		</script>
+
+		{% analytical_head_bottom %}
 	</head>
 
 
 
 	<body>
+		{% analytical_body_top %}
 		<div class="container-fluid full_height site_container">
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				
@@ -112,6 +118,6 @@
 		{% endblock %}
 
 		<script src="{% static 'js/pageHandler.js' %}"></script>
-
+		{% analytical_body_bottom %}
 	</body>
 </html>

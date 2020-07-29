@@ -17,12 +17,42 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import GenericSitemap
+from mmt_map.models import Point, Polygon, Line
+from mmt_pages.models import Page
+
+point_dict = {
+    'queryset': Point.objects.filter(published=True)
+}
+
+line_dict = {
+    'queryset': Line.objects.filter(published=True)
+}
+
+polygon_dict = {
+    'queryset': Polygon.objects.filter(published=True)
+}
+
+admin.site.site_header = "MemoryMapper Admin"
+admin.site.site_title = "MemoryMapper Admin"
+admin.site.index_title = "Welcome to MemoryMapper"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('memorymapper-admin/', admin.site.urls),
     path('', include('mmt_map.urls')),
     path('api/', include('mmt_api.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    path('sitemap.xml', sitemap, 
+        {
+            'sitemaps': 
+                {
+                    'points': GenericSitemap(point_dict, priority=0.6),
+                    'polygons': GenericSitemap(polygon_dict, priority=0.6),
+                    'lines': GenericSitemap(line_dict, priority=0.6),
+                }
+        }, 
+        name='django.contrib.sitemaps.views.sitemap'),
 ]
 
 if settings.DEBUG:

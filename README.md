@@ -4,11 +4,6 @@ The Memory Map Toolkit is a web application for creating interactive maps for he
 
 It is built and maintained by the Bartlett Centre for Advanced Spatial Analysis and the School of Architecture, University College London.
 
-Sites using the Memory Map Toolkit include the Jewish East End Memory Map, ..., and ....
-
-## Bugs
-
-## Feature Requests
 
 
 ## Requirements
@@ -60,23 +55,33 @@ We **highly recommend** that you install an SSL certificate so that traffic to a
 
 ## Todo:
 
-
-
-
-- mapHandler.js - probably needs to be refactored as there are things polluting the global namespace
-
-- Move single settings file into base, development, production and secret_settings files
-
 - Example Apache config
 
-- Logging
+- Barlett, CASA & UCL logos! Need to be somewhere... 
 
-- Django Analytical
+- License
 
-- Uploadable/Changeable logo
+- Favicon
 
-- Custom stylesheet
 
-- sitemaps
 
-- Barlett, CASA & UCL logos! Need to be somewhere...
+
+## Copyright
+
+Copyright (C) 2020  Duncan Hay / University College London
+
+d.hay@ucl.ac.uk
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+

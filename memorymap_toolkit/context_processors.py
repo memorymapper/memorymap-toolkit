@@ -6,5 +6,4 @@ from constance import config
 
 
 def site_settings(request):
-
     return {'config': config}

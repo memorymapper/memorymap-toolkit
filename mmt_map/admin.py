@@ -11,7 +11,7 @@ class DocumentInline(admin.StackedInline):
 	model = Document
 	prepopulated_fields = {"slug": ("title",)}
 	fields = ['title', 'slug', 'order', 'published', 'body',]
-	extra = 0
+	extra = 1
 
 class ImageInline(admin.StackedInline):
 	model = Image
@@ -39,6 +39,8 @@ class PointAdmin(admin.GeoModelAdmin):
 	list_display = ['name', 'theme', 'weight', 'published']
 	list_editable = ['theme', 'weight', 'published']
 
+	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
+
 	class Meta:
 		model = Point
 
@@ -55,6 +57,8 @@ class PolygonAdmin(admin.GeoModelAdmin):
 	list_display = ['name', 'theme', 'weight', 'published']
 	list_editable = ['theme', 'weight', 'published']
 
+	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
+
 	class Meta:
 		model = Polygon
 
@@ -70,6 +74,8 @@ class LineAdmin(admin.GeoModelAdmin):
 
 	list_display = ['name', 'theme', 'weight', 'published']
 	list_editable = ['theme', 'weight', 'published']
+
+	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
 
 	class Meta:
 		model = Line

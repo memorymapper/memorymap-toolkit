@@ -1,0 +1,1 @@
+default_app_config = 'mmt_map.apps.MmtMapConfig'

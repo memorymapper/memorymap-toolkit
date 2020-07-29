@@ -13,10 +13,12 @@ const name = django.jQuery('#id_name').val();
 const geomJson = JSON.parse('{{ serialized|safe }}');
 const mapCenter = turf.center(geomJson).geometry.coordinates;
 
+const zoom = {{ config.ZOOM }};
+
 {% else %}
 
 const mapCenter = [{{ config.MAP_CENTER_LONGITUDE }}, {{ config.MAP_CENTER_LATITUDE}}];
-
+	
 {% endif %}
 
 const geomType = '{{ geom_type }}';
@@ -36,29 +38,42 @@ switch(geomType) {
 }
 
 
-const baseMapStyleUrl = '{{ config.BASE_MAP_STYLE_URL }}';
+const baseMapStyleUrl = '{{ config.BASE_MAP_STYLE_URL|safe }}';
+const baseMapStyleFile = '{{ config.BASE_MAP_STYLE_FILE|safe }}';
 const baseMapStyleKey = '{{ config.MAPTILER_KEY }}';
+mapboxgl.accessToken = '{{ config.MAPBOX_KEY }}';
 
 const map = new mapboxgl.Map({
     container: 'admin_map',
     center: mapCenter,
-    zoom: 16.5,
-    minZoom: 14.5,
-    maxZoom: 18.5,
+    zoom: {{ config.ZOOM }},
+    minZoom: {{ config.MIN_ZOOM }},
+    maxZoom: {{ config.MAX_ZOOM }},
     attributionControl: true,
     logoPosition: 'top-left',
     scrollZoom: true,
     dragPan: true,
 });
 
-var draw;
+let draw;
+let baseMapStyle;
 
-django.jQuery.get(baseMapStyleUrl, function(data) {
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+if (baseMapStyleFile != 'default.json') {
+	baseMapStyle = '{{ MEDIA_URL}}' + baseMapStyleFile;
+} else {
+	baseMapStyle = baseMapStyleUrl;
+}
+
+
+django.jQuery.get(baseMapStyle, function(data) {
 
     let style = data;
 
     // If the default map style is being used, add the key to the sources and glyphs urls
-    if ('Ordnance Survey Open Zoomstack' in style.sources) {
+    if (baseMapStyleUrl == '/static/js/default_map_style.json') {
         style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + baseMapStyleKey;
         style.glyphs = style.glyphs + baseMapStyleKey;
     }
@@ -72,18 +87,19 @@ django.jQuery.get(baseMapStyleUrl, function(data) {
 
 	map.addControl(draw, 'top-right');
 
-	// If geomJson exists, add the feature to the map
-
+	// If geomJson exists, add the feature to the map and zoom to it
 	try {
 		draw.add(geomJson);
+		let bounds = turf.bbox(geomJson);
+        map.fitBounds(bounds);
 	} catch {
-		// do nothing
+		// If it doesn't, do nothing
 	}
-
 
 	map.on('draw.create', updateGeom);
 	map.on('draw.delete', updateGeom);
 	map.on('draw.update', updateGeom);
+
 });
 
 
@@ -155,7 +171,7 @@ function updateGeom(e) {
 	let data = draw.getAll();
 	// if there's a feature, add the json representation to the text area and the map
 	if (data.features.length > 0) {
-		// Only allow one feature to exist at a time. To add multi-polygons use GIS (the results will be better in any case).
+		// Only allow one feature to exist at a time. To add multi-polygons use a GIS (the results will be better in any case).
 		if (data.features.length > 1) {
 			let id = data.features[0].id;
 			data.features.shift();
@@ -165,6 +181,7 @@ function updateGeom(e) {
 		let feature = data.features[0].geometry;
 
 		// Convert the GeoJSON to the correct feature types to match what GeoDjango expects. Lines and polygons are saved as MultiPolygons and MultiLineString geometries to support multi-part buildings or roads which can be added via a GIS; however, adding this editing capacity to the django admin site would be non-trivial.
+
 		switch(feature.type) {
 			case 'Polygon':
 				feature.type = 'MultiPolygon';
