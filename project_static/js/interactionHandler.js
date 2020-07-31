@@ -203,7 +203,7 @@ MmtMap.clickInteractions = {
 	    className: 'detail_popup'
 	}),
 
-	popupHtmlTemplate: '<div class="popup_header"><img src="<%= image %>" /><p class="text-center feature_title"><%= name %></p><br /></div>',
+	popupHtmlTemplate: '<div class="popup_header"><img src="<%= image %>" alt="Image of <%= name %>" /><p class="text-center feature_title"><%= name %></p><br /></div>',
 
 	popupAudioFileHtmlTemplate: '<div class="player popup_player <%= playerId %>" id="<%= playerId %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= url %>"><img src="/static/img/play.svg" alt="play" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div><p class="text-center"><strong>Listen: </strong><%= playerTitle %></p></span><hr />',
 

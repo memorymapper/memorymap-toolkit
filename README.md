@@ -186,13 +186,13 @@ First, edit the example configuration:
 nano example-apache-configuration.conf
 ```
 
-Change the ```ServerName``` line to reflect the address from which users will access your Memory Map, eg: ```ServerName www.mymemorymap.com```. In the rest of the file, replace ```<your_user_name>``` with the name of the user account which administers your server. For example, if you're logged in as memorymapper, the ```WSGIScriptAlias``` line will look like this: 
+Change the ```ServerName``` line to reflect the address from which users will access your Memory Map, eg: ```ServerName www.mymemorymap.com```. In the rest of the file, replace ```<your_user_name>``` with the name of the user account which you use to administer your server. For example, if you're logged in as memorymapper, the ```WSGIScriptAlias``` line will look like this: 
 
 ```
 WSGIScriptAlias / /home/memorymapper/memorymap-toolkit
 ```
 
-Once you've finished editing the configuration, quit Nano and save the file and then copy it to your Apache configuration, naming it after the name of your website, eg:
+Once you've finished editing the configuration, quit Nano and save the file, and then copy it to your Apache configuration, naming it after the name of your website, eg:
 
 ```bash
 sudo cp example-apache-configuration.conf /etc/apache2/sites-available/www.mymemorymap.com.conf
@@ -207,7 +207,7 @@ sudo apachectl restart --graceful
 
 ### 8. Connect Your Domain Name
 
-It's beyond the scope of this document to give full instructions for configuring your domain name as the exact process varies according to your DNS provider. However, you need to add a new A record pointing to the IP address of your server so that it can be accessed using your domain name. Instructions for GoDaddy can be found here: https://uk.godaddy.com/help/manage-dns-zone-files-680
+It's beyond the scope of this document to give full instructions for configuring your domain name as the exact process varies according to your DNS provider. However, you need to add a new A record pointing to the IP address of your server so that it can be accessed over the web. Instructions for GoDaddy can be found here: https://uk.godaddy.com/help/manage-dns-zone-files-680
 
 Once you've connected your domain name, you should now be able to visit your website at the correct address. However, when you first visit nothing will appear as some final configuration steps need to be completed.
 
@@ -231,12 +231,9 @@ All being well, you'll see a blank Memory Map, ready for you to get started.
 
 ### 10. Extra - SSL
 
-We **highly recommend** that you install an SSL certificate so that traffic to and from your website is encrypted. The easiest way to do this is using LetsEncrypt...
+We **highly recommend** that you install an SSL certificate so that traffic to and from your website is encrypted. This will also allow users on mobile platforms to share their location with your memory map and see where they are on the map.
 
-
-
-
-
+The easiest (and cheapest) way to do this is to use LetsEncrypt and CertBot: follow the instructions at https://certbot.eff.org/lets-encrypt/ubuntufocal-apache to get started.
 
 
 ## Copyright
