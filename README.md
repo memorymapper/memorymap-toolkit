@@ -45,7 +45,7 @@ sudo apt install python3-pip python3-venv postgresql postgresql-contrib postgis 
 
 ```bash
 mkdir venv
-python -m venv venv/memorymap-toolkit
+python3 -m venv venv/memorymap-toolkit
 source venv/memorymap-toolkit/bin/activate
 ```
 
@@ -147,10 +147,17 @@ python manage.py migrate --settings=memorymap_toolkit.settings.local
 python manage.py collectstatic --settings=memorymap_toolkit.settings.local
 ```
 
+You then need to create a 'media' folder to store file uploads to your memory map. This needs to be owned by the user/group of your web server:
+
+```bash
+mkdir media
+sudo chown -R www-data:www-data media/
+```
+
 Finally, you need to create a user on the Toolkit so you can log in to the admin site:
 
 ```bash
-python manage.py create_superuser --settings=memorymap_toolkit.settings.local
+python manage.py createsuperuser --settings=memorymap_toolkit.settings.local
 ```
 
 ### 6. Test Everything Works
@@ -180,7 +187,7 @@ sudo ufw deny 8000
 
 We have provided an example Apache configuration file to get you started. This is not the only way you can configure your web server, and if you have particular requirements it may not be suitable for your needs. See https://docs.djangoproject.com/en/3.0/howto/deployment/ for more details.
 
-First, edit the example configuration:
+First, edit the example configuration (note that some of the lines are quite long -  you might need to make your terminal window bigger to see them):
 
 ```bash
 nano example-apache-configuration.conf
@@ -205,33 +212,44 @@ sudo a2ensite www.memorymap.com.conf
 sudo apachectl restart --graceful
 ```
 
+Finally, you need to open ports 80 and 443 on the firewall:
+
+```bash
+sudo ufw allow 'Apache Full'
+```
+
 ### 8. Connect Your Domain Name
 
 It's beyond the scope of this document to give full instructions for configuring your domain name as the exact process varies according to your DNS provider. However, you need to add a new A record pointing to the IP address of your server so that it can be accessed over the web. Instructions for GoDaddy can be found here: https://uk.godaddy.com/help/manage-dns-zone-files-680
 
-Once you've connected your domain name, you should now be able to visit your website at the correct address. However, when you first visit nothing will appear as some final configuration steps need to be completed.
+Once you've connected your domain name, you should now be able to visit your website at the correct address. However, when you first visit the map won't appear as some final configuration steps need to be completed.
 
 
 ### 9. Configure The Map
 
-Visit ```www.mymemorymap.com/memorymapper-admin/``` and log in using the credentials you created using the ```create_superuser``` command you ran earlier.
+Visit ```www.mymemorymap.com/memorymapper-admin/``` and log in using the credentials you created using the ```createsuperuser``` command you ran earlier.
 
 Once you've logged in, click on the 'config' link (under 'Constance'). Most of these settings (at least initially) can be left at their defaults. However, there are couple of settings that need to be filled in before you can start using your map.
 
-The Memory Map Toolbox ships with a basic map style which uses Ordnance Survey Open ZoomStack tiles hosted with MapTiler Cloud. This is a detailed base map covering the United Kingdom. In order to use it, you need to sign up for a free account with MapTiler Cloud (https://www.maptiler.com/cloud/) and copy your access key into the MAPTILER_KEY box.
+The Memory Map Toolbox ships with a basic map style which uses Ordnance Survey Open ZoomStack tiles hosted with MapTiler Cloud. This is a detailed base map covering the whole of the United Kingdom. In order to use it, you need to sign up for a free account with MapTiler Cloud (https://www.maptiler.com/cloud/) and copy your access key into the MAPTILER_KEY box.
 
-The default map is a good base map choice if you're in the UK. However, if your memory map is located elsewhere, you'll need to use something else. The easiest option is to use a pre-created style from MapBox or MapTiler and copy the StyleJSON link (https://docs.mapbox.com/api/maps/#retrieve-a-style), including your access key, into the BASE_MAP_STYLE_URL box. If you're using a MapBox style, you also need to copy your key into the MAPBOX_KEY box.
+The default map is a good base map choice if you're in the UK. However, if your memory map is located elsewhere, you'll need to use something else. The easiest option is to use a pre-created style from MapBox or MapTiler and copy the StyleJSON link (https://docs.mapbox.com/api/maps/#retrieve-a-style), including your access key, into the BASE_MAP_STYLE_URL box. If you're using a MapBox style, you also need to copy your key into the MAPBOX_KEY box. It is also possible to use your own self-hosted map tiles and style, though this is beyond the scope of this document.
 
-Finally, you need to edit the MAP_CENTRE_LATITUDE and MAP_CENTER_LONGITUDE settings to change where your map is centred when it first loads.
+You also need to edit the MAP_CENTRE_LATITUDE and MAP_CENTER_LONGITUDE settings to change where your map is centred when it first loads.
 
 Click the 'Save' button at the bottom of the page, and then click on the 'Visit Site' link in the top right hand corner.
 
 All being well, you'll see a blank Memory Map, ready for you to get started.
 
+#### Next Steps
+
+- Add an 'About' page to let people know what your Memory Map shows
+- Change the ```WELCOME_MESSAGE``` setting in the map config
+- Design a custom map style in [Maptutnik](https://maputnik.github.io/)
 
 ### 10. Extra - SSL
 
-We **highly recommend** that you install an SSL certificate so that traffic to and from your website is encrypted. This will also allow users on mobile platforms to share their location with your memory map and see where they are on the map.
+We **highly recommend** that you install an SSL certificate so that traffic to and from your website is encrypted. This will also allow users to share their location with your memory map and see where they are on the map.
 
 The easiest (and cheapest) way to do this is to use LetsEncrypt and CertBot: follow the instructions at https://certbot.eff.org/lets-encrypt/ubuntufocal-apache to get started.
 

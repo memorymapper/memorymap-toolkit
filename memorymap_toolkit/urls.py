@@ -39,7 +39,7 @@ admin.site.site_title = "Memory Map Toolkit Admin"
 admin.site.index_title = "Welcome to the Memory Map Toolkit"
 
 urlpatterns = [
-    path('memorymapper-admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('', include('mmt_map.urls')),
     path('api/', include('mmt_api.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),

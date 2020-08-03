@@ -41,6 +41,7 @@ const MmtMap = {
 		{% endfor %}
 	],
 
+	{% if themes %}
 	themeStyleExpressions: [
     'case',
 	    {% for theme in themes %}
@@ -49,6 +50,12 @@ const MmtMap = {
         {% endfor %}
         '#44a3fc'
     ],
+    {% else %}
+
+    themeStyleExpressions: '#44a3fc',
+
+    {% endif %}
+
 
     addStyle: function() {
 
