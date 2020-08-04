@@ -246,6 +246,7 @@ All being well, you'll see a blank Memory Map, ready for you to get started.
 - Add an 'About' page to let people know what your Memory Map shows
 - Change the ```WELCOME_MESSAGE``` setting in the map config
 - Design a custom map style in [Maptutnik](https://maputnik.github.io/)
+- Add a some points, polygons, or lines to your Memory Map
 
 ### 10. Extra - SSL
 

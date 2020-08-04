@@ -190,6 +190,21 @@ a:active {
 	visibility: hidden;
 }
 
+.mapboxgl-accessibility-marker {
+	background: transparent;
+	margin: 0;
+	padding: 0;
+	appearance: none;
+	border-radius: 0;
+	border: none;
+	position: fixed;
+}
+
+.mapboxgl-accessibility-marker:focus {
+	border: 2px solid black;
+}
+
+
 
 .image_container {
 	margin-bottom: 50px;
@@ -391,8 +406,6 @@ article img {
 .visible::after {
 	content: " ✅";
 }
-
-
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {

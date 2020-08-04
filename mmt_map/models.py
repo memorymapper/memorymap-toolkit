@@ -52,7 +52,7 @@ class AbstractFeature(models.Model):
 	tags = TaggableManager(blank=True)
 	# When the feature is saved, the tags attached to it are stored as a string so they can be easily serialised as mapbox vector tiles
 	tag_str = models.CharField(max_length=256, blank=True)
-	published = models.BooleanField(default=True)
+	published = models.BooleanField(default=False)
 
 
 	def get_type(self):

@@ -262,6 +262,48 @@ map.on('load', function() {
             ]
         }
     });
+
+
+    map.addLayer({
+        'id': 'line_labels',
+        'source': 'interactive',
+        'source-layer': 'lines',
+        'type': 'symbol',
+        'layout': {
+            'symbol-placement': 'point',
+            'text-field': ['get', 'name'],
+            'text-font': [MmtMap.settings.font],
+            'text-size': [
+                'interpolate', ['linear'], ['zoom'],
+                14, ['*', 8, ['get', 'weight']],
+                18, ['*', 16, ['get', 'weight']]
+            ],
+            'text-anchor': 'center',
+            'text-justify': 'auto',
+            'symbol-sort-key': ['get', 'weight']
+        },
+        'paint': {
+            'text-color': '#2c2c2c',
+            'text-halo-color': 'rgba(255,255,255,0.8)',
+            'text-halo-width': ['*', 2, ['get', 'weight']],
+            'text-opacity': ["interpolate", ["linear"], ["zoom"],
+                12.5, 0.5,
+                18.5, 1
+            ]
+        }
+    });
+
+    if (MmtMap.settings.accessibility) {
+        map.addControl(new MapboxAccessibility({ 
+            accessibleLabelProperty: 'name',
+            layers: [
+                'points_labels',
+                'line_labels',
+                'polygon_labels'
+            ]
+        }));
+    }
+
 });
 
 

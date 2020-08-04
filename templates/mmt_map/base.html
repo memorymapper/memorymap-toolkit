@@ -21,8 +21,12 @@
 		<!--<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>-->
 		<script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
 
-		<!-- Custom Styles -->
+		<!-- Mapbox GL Accessibility Plugin -->
 		{% load static %}
+		<script src="{% static 'mapbox-gl-accessibility/mapbox-gl-accessibility.js' %}"></script>
+
+
+		<!-- Custom Styles -->
 		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 		<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
