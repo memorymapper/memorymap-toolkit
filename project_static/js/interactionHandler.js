@@ -54,7 +54,7 @@ MmtMap.clickInteractions = {
 
 	documentHtmlTemplate: '<%= document_body %><hr /><br />',
 
-	audioFileHtmlTemplate: '<h3>Listen: <%= title %></h3><div class="player <%= slug %>-detail" id="<%= slug %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= file %>" data-title="<%= title %>", data-player_id="<%= slug %>-detail"><img src="/static/img/play.svg" alt="play" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div>',
+	audioFileHtmlTemplate: '<h3>Listen: <%= title %></h3><div class="player <%= slug %>-detail" id="<%= slug %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= file %>" data-title="<%= title %>" data-player_id="<%= slug %>-detail"><img src="/static/img/play.svg" alt="Play audio file of <%= title %>" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div>',
 
 	imageHtmlTemplate: '<div class="image_container"><img src="<%= file %>" alt="<%= title %>" style="width: 100%;" class="gather_for_modal"><p class="small"><em><%= title %></em></p></div>',
 
@@ -71,12 +71,14 @@ MmtMap.clickInteractions = {
 	        }
 	    };
 
-	    let url = 'api/1.0/features/' + sourceLayer + '/' + id + '/attachments/';
+	    let url = '/api/1.0/features/' + sourceLayer + '/' + id + '/attachments/';
 		
 		// Then get the data for the page and display it as an overlay to the map
 	    $.get(url, function(data) {
+	    	$('.text_only_container').css({'overflow': 'hidden'});
 	        $('.blackout_overlay, .feature_detail').remove();
-	        $('.mapboxgl-control-container').append('<div class="blackout_overlay close_feature"></div>');
+	        $('.mapboxgl-control-container, .text_only_container').append('<div class="blackout_overlay close_feature"></div>');
+	        
 	        
 	        // Once you have the data, compile the HTML fragments
 
@@ -184,6 +186,7 @@ MmtMap.clickInteractions = {
 
 	            $('.blackout_overlay, .feature_detail').fadeOut('fast', function() {
 	                $('.blackout_overlay, .feature_detail').remove();
+	                $('.text_only_container').css({'overflow-x': 'hidden', 'overflow-y': 'scroll'});
 	                pageHandler.overlay = false;   
 	            });
 

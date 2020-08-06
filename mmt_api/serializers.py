@@ -24,19 +24,19 @@ class PointSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Point
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str',)
 
 class PolygonSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Polygon
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug','tag_str',)
 
 class LineSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Line
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug',)
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str',)
 
 
 

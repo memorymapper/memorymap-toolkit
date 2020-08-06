@@ -1,0 +1,60 @@
+{% extends 'mmt_map/base.html' %}
+
+{% block content %}
+
+<div class="row full_height iface_container justify-content-center text_only_container">
+	<div class="col-xs-12 col-sm-8 col-lg-6">
+		<br />
+		<h1 class="results_title">Place Index</h1>
+		<hr />
+		<div class="feature_list">
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% load static %}
+
+<script>
+
+/* Instantiate global list and map handler objects containing URL settings for this memory map */
+
+
+	const MmtFeatureList = {
+		listUrl: '{% url 'feature_list' %}',
+		themeUrl: '{% url 'get_features_by_theme' %}',
+		searchUrl: '{% url 'search_features' %}',
+		allSites: true
+	}
+
+	const MmtMap = {
+		themes: [
+			{% for theme in themes %}
+			{
+				'id': '{{ theme.id }}',
+				'name': '{{ theme }}',
+				'color': '{{ theme.color }}'
+			},
+			{% endfor %}
+		]
+	}
+
+</script>
+
+<script src="{% static 'js/audioHandler.js' %}"></script>
+<script src="{% static 'js/interactionHandler.js' %}"></script>
+<script src="{% static 'js/accessibleFeatureListHandler.js' %}"></script>
+<script src="{% static 'js/accessibleFeatureSearchHandler.js' %}"></script>
+<script src="{% static 'js/pageHandler.js' %}"></script>
+
+<script>
+	pageHandler.populatePageMenu();
+	pageHandler.loadFeatureDetailFromUrlParams();
+
+	MmtFeatureList.populateList(MmtFeatureList.listUrl, {page: 1});
+
+</script>
+{% endblock %}

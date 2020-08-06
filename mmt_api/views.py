@@ -1,10 +1,13 @@
 # Django core
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.core.paginator import Paginator
 from django.db.models import Q
-from django.core.serializers import serialize
-from django.http import JsonResponse
-from django.db import connection
+
+# 3rd Party
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import status
 
 # Other Python modules
 import json 
@@ -15,6 +18,14 @@ from mmt_pages.models import Page
 from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer
 
 
+# Memorymapper exposes a read-only API allowing access to the data in a given Memory Map. 
+# This is used throughout the web application, though we hope (subject to further 
+# funding) to use this as the basis of the development of native mobile 
+# applications to allow people to download content it and access it in areas where mobile 
+# reception is poor.
+
+
+@api_view()
 def feature(request, pk, source_layer):
 	"""
 	Returns a GeoJSON representation of a single feature
@@ -33,10 +44,10 @@ def feature(request, pk, source_layer):
 		line = Line.objects.get(id=pk)
 		serializer = LineSerializer(line)
 
-	return JsonResponse(serializer.data)
+	return Response(serializer.data)
 
 
-
+@api_view()
 def feature_detail(request, pk, source_layer):
 	"""
 	Returns a JSON representation of a single feature and all of its attachements
@@ -54,10 +65,144 @@ def feature_detail(request, pk, source_layer):
 		line = Line.objects.get(id=pk)
 		serializer = LineDetailSerializer(line)
 
-	return JsonResponse(serializer.data)
+	return Response(serializer.data)
+
+
+@api_view()
+def feature_list(request):
+	"""
+	Returns a paginated list of features (used for text only access to memory map content)
+	"""
+
+	points = Point.objects.filter(published=True)
+	lines = Line.objects.filter(published=True)
+	polygons = Polygon.objects.filter(published=True)
+
+	points_serializer = PointSerializer(points, many=True)
+	lines_serializer = LineSerializer(lines, many=True)
+	polygons_serializer = PolygonSerializer(polygons, many=True)
+
+	points_data = points_serializer.data
+	lines_data = lines_serializer.data
+	polygons_data = polygons_serializer.data
+
+	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
+
+	paginator = Paginator(sorted_features, 5)
+
+	try:
+		page = request.GET['page']
+
+	except:
+		page = 1
+
+	if int(page) > paginator.num_pages:
+		page = paginator.num_pages
+
+	features_list = {
+		'page': page,
+		'totalPages': paginator.num_pages,
+		'features': paginator.page(page).object_list
+	}  
+
+	return Response(features_list)
+
+
+@api_view()
+def search_features(request):
+	"""
+	Search features by title or tags. Returns a JSON list of results.
+	"""
+
+	try:
+		search_string = request.GET['q']
+	except:
+		return Response('No search string', status=status.HTTP_404_NOT_FOUND)
+
+	points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+	lines = Line.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+	polygons = Polygon.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+
+	points_serializer = PointSerializer(points, many=True)
+	lines_serializer = LineSerializer(lines, many=True)
+	polygons_serializer = PolygonSerializer(polygons, many=True)
+
+	points_data = points_serializer.data
+	lines_data = lines_serializer.data
+	polygons_data = polygons_serializer.data
+
+	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
+
+	paginator = Paginator(sorted_features, 5)
+
+	try:
+		page = request.GET['page']
+
+	except:
+		page = 1
+
+	if int(page) > paginator.num_pages:
+		page = paginator.num_pages
+
+	features_list = {
+		'page': page,
+		'totalPages': paginator.num_pages,
+		'features': paginator.page(page).object_list
+	} 
+
+	return Response(features_list)
+
+
+@api_view()
+def get_features_by_theme(request):
+	"""
+	Returns a JSON list of features in a particular theme.
+	"""
+
+	try:
+		theme = request.GET['theme']
+	except:
+		return Response('No theme id', status=status.HTTP_404_NOT_FOUND)
+
+	points = Point.objects.filter(theme=theme)
+	lines = Line.objects.filter(theme=theme)
+	polygons = Polygon.objects.filter(theme=theme)
+
+	points_serializer = PointSerializer(points, many=True)
+	lines_serializer = LineSerializer(lines, many=True)
+	polygons_serializer = PolygonSerializer(polygons, many=True)
+
+	points_data = points_serializer.data
+	lines_data = lines_serializer.data
+	polygons_data = polygons_serializer.data
+
+	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
+
+	paginator = Paginator(sorted_features, 5)
+
+	try:
+		page = request.GET['page']
+
+	except:
+		page = 1
+
+	if int(page) > paginator.num_pages:
+		page = paginator.num_pages
+
+	features_list = {
+		'page': page,
+		'totalPages': paginator.num_pages,
+		'features': paginator.page(page).object_list
+	} 
+
+	return Response(features_list)
 
 
 
+@api_view()
 def feature_attachments(request, pk, source_layer):
 	"""
 	Returns a JSON representation of all of the attachements associated with a feature in the correct order
@@ -110,10 +255,10 @@ def feature_attachments(request, pk, source_layer):
 
 	feature['attachments'] = attachments_json
 
-	return JsonResponse(feature, safe=False)
+	return Response(feature)
 
 
-
+@api_view()
 def document(request, pk):
 	"""
 	Returns a JSON representation of a single document
@@ -121,9 +266,10 @@ def document(request, pk):
 	document = Document.objects.get(id=pk)
 	serializer = DocumentSerializer(document)
 
-	return JsonResponse(serializer.data)
+	return Response(serializer.data)
 
 
+@api_view()
 def page(request, slug):
 	"""
 	Returns a JSON representation of an information page
@@ -132,9 +278,9 @@ def page(request, slug):
 	page = Page.objects.get(slug=slug)
 	serializer = PageSerializer(page)
 
-	return JsonResponse(serializer.data)
+	return Response(serializer.data)
 
-
+@api_view()
 def pages(request):
 	"""
 	Returns a JSON representation of all of the pages on the site
@@ -143,4 +289,4 @@ def pages(request):
 	pages = Page.objects.all()
 	serializer = PageLinkSerializer(pages, many=True)
 
-	return JsonResponse(serializer.data, safe=False)
+	return Response(serializer.data)

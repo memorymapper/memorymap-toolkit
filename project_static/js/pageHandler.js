@@ -7,14 +7,16 @@ let pageHandler = {
 
 	getPage: function(url) {
 		$.get(url, function(data) {
-			
+
 			if (pageHandler.overlay == true) {
 				$('.blackout_overlay, .feature_detail').fadeOut('fast', function() {
+					$('.text_only_container').css({'overflow': 'hidden'});
 					$('.blackout_overlay, .feature_detail').remove();
-					$('.mapboxgl-control-container').append('<div class="blackout_overlay close_feature"></div>');
+					$('.mapboxgl-control-container, .text_only_container').append('<div class="blackout_overlay close_feature"></div>');
 				});
 			} else {
-				$('.mapboxgl-control-container').append('<div class="blackout_overlay close_feature"></div>');
+				$('.text_only_container').css({'overflow': 'hidden'});
+				$('.mapboxgl-control-container, .text_only_container').append('<div class="blackout_overlay close_feature"></div>');
 			}
 
 	        let pageHtml = _.template(pageHandler.pageHtmlTemplate);
@@ -28,6 +30,7 @@ let pageHandler = {
 	        $('.close_feature').click(function() {
 	            $('.blackout_overlay, .feature_detail').fadeOut('fast', function() {
 	                $('.blackout_overlay, .feature_detail').remove();
+	                $('.text_only_container').css({'overflow-x': 'hidden', 'overflow-y': 'scroll'});
 	                pageHandler.overlay = false;
 	            });
 	            if (window.history && window.history.pushState) {
@@ -72,7 +75,7 @@ let pageHandler = {
 		$.get('/api/1.0/pages/', function(data) {
 			for (let i=0; i < data.length; i++) {
 				let link = '<a class="dropdown-item page_link" href="/api/1.0/pages/' + data[i].slug + '">'+ data[i].title +'</a>';
-				$('#pages').append(link);
+				$('#pages').prepend(link);
 			}
 		}).done(function() {
 			$('.page_link').click(function(e) {
@@ -84,8 +87,4 @@ let pageHandler = {
 	}
 
 }
-
-pageHandler.populatePageMenu();
-pageHandler.loadFeatureDetailFromUrlParams();
-pageHandler.showWelcomeMessage();
 

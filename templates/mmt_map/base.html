@@ -21,11 +21,8 @@
 		<!--<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>-->
 		<script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
 
-		<!-- Mapbox GL Accessibility Plugin -->
+
 		{% load static %}
-		<script src="{% static 'mapbox-gl-accessibility/mapbox-gl-accessibility.js' %}"></script>
-
-
 		<!-- Custom Styles -->
 		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 		<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
@@ -73,6 +70,8 @@
 							About
 							</a>
 							<div class="dropdown-menu" id="pages" aria-labelledby="navbarDropdown">
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="{% url 'text_only' %}">Text Only Site</a>
 							</div>
 						</li>
 						{% if themes %}
@@ -86,7 +85,7 @@
 						{% endif %}
 					</ul>
 					<form class="form-inline my-2 my-lg-0">
-						<input class="form-control mr-sm-2" placeholder="Search visible sites" aria-label="Search" id="map_search">
+						<input class="form-control mr-sm-2" placeholder="Search" aria-label="Search" id="map_search">
 					</form>
 				</div>
 			</nav>
@@ -123,7 +122,6 @@
 		{% block scripts %}
 		{% endblock %}
 
-		<script src="{% static 'js/pageHandler.js' %}"></script>
 		{% analytical_body_bottom %}
 	</body>
 </html>

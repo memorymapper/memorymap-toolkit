@@ -4,7 +4,8 @@ body, html {
 
 body {
 	font-family: 'Nunito Sans', sans-serif;
-	background-color: #fcfcfc
+	background-color: #fcfcfc;
+	overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -406,6 +407,20 @@ article img {
 .visible::after {
 	content: " ✅";
 }
+
+.text_only_container {
+	max-height: 100%;
+	overflow-y: scroll;
+}
+
+.text_only_container .feature_detail {
+	margin-left: 40px;
+}
+
+.text_only_container .blackout_overlay {
+	width: 101%;
+}
+
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {

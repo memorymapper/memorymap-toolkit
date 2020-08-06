@@ -28,8 +28,7 @@ const MmtMap = {
 		pitch: {{ config.PITCH }},
 		bearing: {{ config.BEARING }},
 		scale: '{{ config.SCALE }}',
-		font: '{{ config.FEATURE_LABEL_FONT}}',
-		accessibility: {{ config.ACCESSIBILITY|lower }}
+		font: '{{ config.FEATURE_LABEL_FONT}}'
 	},
 
 	themes: [
@@ -92,5 +91,11 @@ const MmtMap = {
 <script src="{% static 'js/mapHandler.js' %}"></script>
 <script src="{% static 'js/filters.js' %}"></script>
 <script src="{% static 'js/search.js' %}"></script>
+<script src="{% static 'js/pageHandler.js' %}"></script>
 
+<script>
+	pageHandler.populatePageMenu();
+	pageHandler.loadFeatureDetailFromUrlParams();
+	pageHandler.showWelcomeMessage();
+</script>
 {% endblock %}

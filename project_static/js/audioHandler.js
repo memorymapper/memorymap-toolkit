@@ -75,7 +75,7 @@ let audioHandler = {
             let seek_value = one_percent * percentage;
             this.sounds[playerId].seek(seek_value);
             let seek = this.sounds[playerId].seek() || 0;
-            let time = formatTime(Math.round(seek));
+            let time = audioHandler.formatTime(Math.round(seek));
             $('.' + playerId + ' .progress_bar_fill').css('width', percentage + '%');
             $('.' + playerId + ' .player_timer').html(time);
         } catch(err) {
@@ -87,7 +87,7 @@ let audioHandler = {
         // Update the progress bar width (if a sound has previously been played)
         try {
             var seek = this.sounds[playerId].seek() || 0;
-            var time = formatTime(Math.round(seek));
+            var time = audioHandler.formatTime(Math.round(seek));
             var duration = this.sounds[playerId].duration();
             var progress_bar_length = (seek/duration) * 100;
             $('.' + playerId + ' .progress_bar_fill').css('width', progress_bar_length + '%');

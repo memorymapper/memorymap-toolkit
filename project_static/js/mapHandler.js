@@ -292,18 +292,6 @@ map.on('load', function() {
             ]
         }
     });
-
-    if (MmtMap.settings.accessibility) {
-        map.addControl(new MapboxAccessibility({ 
-            accessibleLabelProperty: 'name',
-            layers: [
-                'points_labels',
-                'line_labels',
-                'polygon_labels'
-            ]
-        }));
-    }
-
 });
 
 
@@ -387,5 +375,6 @@ map.on('click', 'lines', function(e) {
     MmtMap.hoverInteractions.togglePopup('lines');
     MmtMap.clickInteractions.clickFeature('interactive', 'lines', e.features[0], e.features[0].properties.id, e.lngLat);
 });
+
 
 

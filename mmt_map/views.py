@@ -65,6 +65,15 @@ def feature_detail(request, pk, source_layer):
 
 	return render(request, 'mmt_map/feature.html', {'feature': feature, 'attachments': attachments, 'host': host, 'today': today })
 
+
+def text_only_feature_list(request):
+	"""A text only representation of features to provide access to memory map content for blind and partially-sighted users"""
+
+	themes = Theme.objects.all()
+
+	return render(request, 'mmt_map/feature_list.html', {'themes': themes})
+
+
 # Vector tiles are optionally cached to stop the database being spammed to heavily.
 @cache_page(60 * config.CACHE_TIMEOUT)
 def vector_tile(request, z, x, y, tile_format):
