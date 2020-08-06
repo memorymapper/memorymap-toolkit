@@ -31,6 +31,7 @@ MmtFeatureList.populateList = function(url, params) {
 		// Add all the features as cards, activating the audio players...
 
 		if (features.length == 0) {
+			$('.feature_list').empty();
 			$('.feature_list').append('<p class="lead">No results found</p>');
 		}
 
