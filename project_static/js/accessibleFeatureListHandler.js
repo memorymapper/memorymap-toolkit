@@ -87,7 +87,7 @@ MmtFeatureList.populateList = function(url, params) {
 
 			let paginationHtml = _.template(paginationHtmlTemplate);
 
-			for (let i = 1; i < totalPages; i++) {
+			for (let i = 1; i <= totalPages; i++) {
 				if (page == i) {
 					page_numbers += '<li class="page-item active"><span class="page-link">' + i + '<span class="sr-only">(current)</span></span></li>';
 				} else {
