@@ -30,6 +30,10 @@ MmtFeatureList.populateList = function(url, params) {
 
 		// Add all the features as cards, activating the audio players...
 
+		if (features.length == 0) {
+			$('.feature_list').append('<p class="lead">No results found</p>');
+		}
+
 		for (let i=0; i<features.length; i++) {
 			let featureCardHeaderHtml = _.template(featureCardHeaderHtmlTemplate);
 			let audioPlayerHtml = _.template(audioPlayerHtmlTemplate);
