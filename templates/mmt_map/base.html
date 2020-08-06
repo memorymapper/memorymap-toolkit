@@ -53,8 +53,8 @@
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				
 				{% if config.LOGO_IMAGE == 'default.png' %}
-				<a class="navbar-brand d-none d-sm-block" href="#">{{ config.SITE_TITLE }}</a>
-				<a class="navbar-brand d-sm-none d-block" href="#">{{ config.SITE_TITLE }}</a>
+				<a class="navbar-brand d-none d-sm-block" href="/">{{ config.SITE_TITLE }}</a>
+				<a class="navbar-brand d-sm-none d-block" href="/">{{ config.SITE_TITLE }}</a>
 				{% else %}
 				<a class="navbar-brand d-none d-sm-block" href="/"><img src="{{ MEDIA_URL }}{{ config.LOGO_IMAGE }}" alt="{{ config.SITE_TITLE }}" width="auto" height="30" /></a>
 				<a class="navbar-brand d-sm-none d-block" href="/"><img src="{{ MEDIA_URL }}{{ config.LOGO_IMAGE }}" alt="{{ config.SITE_TITLE }}" width="auto" height="30" /></a>

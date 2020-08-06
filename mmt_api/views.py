@@ -89,7 +89,7 @@ def feature_list(request):
 	features = points_data['features'] + lines_data['features'] + polygons_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
-	paginator = Paginator(sorted_features, 5)
+	paginator = Paginator(sorted_features, 20)
 
 	try:
 		page = request.GET['page']
@@ -135,7 +135,7 @@ def search_features(request):
 	features = points_data['features'] + lines_data['features'] + polygons_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
-	paginator = Paginator(sorted_features, 5)
+	paginator = Paginator(sorted_features, 20)
 
 	try:
 		page = request.GET['page']
@@ -181,7 +181,7 @@ def get_features_by_theme(request):
 	features = points_data['features'] + lines_data['features'] + polygons_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
-	paginator = Paginator(sorted_features, 5)
+	paginator = Paginator(sorted_features, 20)
 
 	try:
 		page = request.GET['page']
