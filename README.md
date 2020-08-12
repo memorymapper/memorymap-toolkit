@@ -30,7 +30,7 @@ We are unable to offer comprehensive installation for all platforms. However, be
 
 ### 0. Inititial Server Setup
 
-Follow the instructions for intial server setup here: https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04
+Follow the instructions for initial server setup here: https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04
 
 Once done, you should have SSH access to your server and have enabled Ubuntu's built-in firewall.
 
@@ -68,7 +68,7 @@ GRANT ALL PRIVILEGES ON DATABASE memorymap TO USER memorymapper;
 CREATE EXTENSION postgis;
 \q
 ```
-Replace 'your_password' with something secure and keep a record of it!
+Replace the ```memorymapper```, ```'your_password'```, and ```memorymap``` with your own secure database settings and keep a record of them!
 
 ### 5. Add the Database Settings to the Memory Map Toolkit
 
@@ -124,7 +124,7 @@ ALLOWED_HOSTS = ['www.mymemorymap.com']
 ```
 
 In the ```DATABASES``` section, edit the ```NAME```, ```USER``` and ```PASSWORD```
-settings to reflect how you configured the database:
+settings to reflect how you configured the database, ie:
 
 ```python
 DATABASES = {
