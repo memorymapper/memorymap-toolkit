@@ -240,14 +240,11 @@ def feature_attachments(request, pk, source_layer):
 
 	for a in attachments:
 		if a.__class__.__name__.lower() == 'document':
-			print('d')
 			serializer = DocumentSerializer(a)
 		elif a.__class__.__name__.lower() == 'image':
 			serializer = ImageSerializer(a)
-			print('i')
 		elif a.__class__.__name__.lower() == 'audiofile':
 			serializer = AudioFileSerializer(a)
-			print('a')
 
 		attachments_json.append(serializer.data)
 
