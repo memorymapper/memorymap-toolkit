@@ -255,6 +255,18 @@ We **highly recommend** that you install an SSL certificate so that traffic to a
 The easiest (and cheapest) way to do this is to use LetsEncrypt and CertBot: follow the instructions at https://certbot.eff.org/lets-encrypt/ubuntufocal-apache to get started.
 
 
+## Testing
+
+The codebase has full test coverage at Model level. To run the tests:
+
+```bash
+python manage.py test mmt_map.tests; python manage.py test mmt_pages.tests
+```
+
+At present there is no test coverage for views, forms, or the front-end.
+
+
+
 ## Copyright
 
 Copyright (C) 2020  Duncan Hay / University College London
@@ -273,9 +285,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-- todo:
-
-Change all the API views so they take GET data so it's all the same...
 

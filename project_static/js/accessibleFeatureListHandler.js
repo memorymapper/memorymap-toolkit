@@ -28,12 +28,14 @@ MmtFeatureList.populateList = function(url, params) {
 
 		let paginationHtmlTemplate = '<nav aria-label="pagination"><ul class="pagination"><%= page_numbers %></ul></nav>';
 
-		// Add all the features as cards, activating the audio players...
+		// If there are no features, tell the user
 
 		if (features.length == 0) {
 			$('.feature_list').empty();
 			$('.feature_list').append('<p class="lead">No results found</p>');
 		}
+
+		// Add all the features as cards, activating the audio players...
 
 		for (let i=0; i<features.length; i++) {
 			let featureCardHeaderHtml = _.template(featureCardHeaderHtmlTemplate);

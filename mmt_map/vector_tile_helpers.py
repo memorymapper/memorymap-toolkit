@@ -1,7 +1,14 @@
 ## Helper functions for creating vector tiles from a PostGIS database - adapted from https://github.com/pramsey/minimal-mvt
+from psycopg2 import sql
+
 
 def tileIsValid(tile):
+    """
+    Check whether the requested tile is valid. Extra checks on the x/y/z/format variables have been added on top of those provided by Django's URL dispatcher because I'm paranoid about the raw SQL query needed to return a tile.
+    """
     if not ('x' in tile and 'y' in tile and 'zoom' in tile):
+        return False
+    if not (type(tile['x']) == int and type(tile['y'] == int)):
         return False
     if 'format' not in tile or tile['format'] not in ['pbf', 'mvt']:
         return False
@@ -32,13 +39,3 @@ def tileToEnvelope(tile):
     env['ymin'] = worldMercMax - tileMercSize * (tile['y'] + 1)
     env['ymax'] = worldMercMax - tileMercSize * (tile['y'])
     return env
-
-
-# Generate SQL to materialize a query envelope in EPSG:3857.
-# Densify the edges a little so the envelope can be
-# safely converted to other coordinate systems.
-def envelopeToBoundsSQL(env):
-    DENSIFY_FACTOR = 4
-    env['segSize'] = (env['xmax'] - env['xmin'])/DENSIFY_FACTOR
-    sql_tmpl = 'ST_Segmentize(ST_MakeEnvelope({xmin}, {ymin}, {xmax}, {ymax}, 3857),{segSize})'
-    return sql_tmpl.format(**env)

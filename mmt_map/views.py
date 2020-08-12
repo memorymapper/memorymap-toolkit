@@ -11,6 +11,7 @@ from django.contrib.gis.geos import GEOSGeometry
 # Other Python modules
 import json 
 from datetime import datetime
+from psycopg2 import sql
 
 # Third Party Django apps
 from constance import config
@@ -19,7 +20,7 @@ from constance import config
 from .models import Point, Line, Polygon, Theme, Document, Image, AudioFile
 from mmt_pages.models import Page
 from mmt_api.serializers import PointSerializer, PolygonSerializer, PointDetailSerializer, DocumentSerializer
-from .vector_tile_helpers import tileIsValid, tileToEnvelope, envelopeToBoundsSQL
+from .vector_tile_helpers import tileIsValid, tileToEnvelope
 
 
 def index(request):
@@ -78,7 +79,7 @@ def text_only_feature_list(request):
 @cache_page(60 * config.CACHE_TIMEOUT)
 def vector_tile(request, z, x, y, tile_format):
 	"""
-	Returns a vector tile. Uses raw SQL because GeoDjango can't return vector tiles (though to my mind it should). Tiles are cached so as to make large maps more performant, at the expense of updates not being visible immediately.
+	Returns a vector tile. Uses raw SQL because GeoDjango can't return vector tiles (though to my mind it should). Tiles are optionally cached so as to make large maps more performant, at the expense of updates not being visible immediately. Adapted from https://github.com/pramsey/minimal-mvt, though refactored so the query is built without using string.format()!
 	"""
 	tile = {
 		'zoom': int(z),
@@ -88,41 +89,44 @@ def vector_tile(request, z, x, y, tile_format):
 	}
 
 	if not tileIsValid(tile):
-		return HttpResponse('tile not valid')
+		return HttpResponse('<p>Tile request not valid</p>', status=400)
 
 	env = tileToEnvelope(tile)
-	env = envelopeToBoundsSQL(env)
 
-	
+	DENSIFY_FACTOR = 4
+	env['segSize'] = (env['xmax'] - env['xmin'])/DENSIFY_FACTOR
+
+	# The query has to be built manually to return the geometries as vector tiles. Must be changed if you update the models
+
 	sql_tmpl = """
 		WITH 
-		bounds AS (
-			SELECT {env} AS geom, 
-				   {env}::box2d AS b2d
+		"bounds" AS (
+			SELECT ST_Segmentize(ST_MakeEnvelope(%(xmin)s, %(ymin)s, %(xmax)s, %(ymax)s, 3857),%(segSize)s) AS "geom", 
+				   ST_Segmentize(ST_MakeEnvelope(%(xmin)s, %(ymin)s, %(xmax)s, %(ymax)s, 3857),%(segSize)s)::box2d AS "b2d"
 		),
-		mvtgeom AS (
-			SELECT ST_AsMVTGeom(ST_Transform(t.{geomColumn}, 3857), bounds.b2d) AS geom, 
-				   {attrColumns}
-			FROM {table} t, bounds
-			WHERE ST_Intersects(t.{geomColumn}, ST_Transform(bounds.geom, {srid})) AND published = TRUE
+		"mvtgeom" AS (
+			SELECT ST_AsMVTGeom(ST_Transform("t"."geom", 3857), "bounds"."b2d") AS "geom", 
+				   "id", "name", "weight", "theme_id", "tag_str"
+			FROM  {table} "t", "bounds"
+			WHERE ST_Intersects("t"."geom", ST_Transform("bounds"."geom", 4326)) AND "published" = TRUE
 		) 
-		SELECT ST_AsMVT(mvtgeom.*, {layerName}) FROM mvtgeom
-		"""
+		SELECT ST_AsMVT("mvtgeom".*, {layerName}) FROM "mvtgeom"
+	"""
 
-	# The layers have to be hard-coded because we're using SQL not the ORM. Must be changed if you update the models
+	# Map the geometry types to PostGIS database tables and layer names for consumption by MapboxGL
 
 	layers = {
 		'points': {
 			'table': 'mmt_map_point',
-			'layerName': '\'points\''
+			'layerName': "points"
 		},
 		'polygons': {
 			'table': 'mmt_map_polygon',
-			'layerName': '\'polygons\''
+			'layerName': "polygons"
 		},
 		'lines': {
 			'table': 'mmt_map_line',
-			'layerName': '\'lines\''
+			'layerName': "lines"
 		}
 	}
 
@@ -135,10 +139,13 @@ def vector_tile(request, z, x, y, tile_format):
 	# Loop over the layers and concatenate them into the response
 
 	for layer, attrs in layers.items():
-		sql = sql_tmpl.format(env=env, attrColumns='id, name, weight, theme_id, tag_str', srid='4326', geomColumn='geom', table=attrs['table'], layerName=attrs['layerName'])
+
+		query = sql.SQL(sql_tmpl).format(table=sql.Identifier(attrs['table']), layerName=sql.Literal(attrs['layerName']))
+
+		params = {'xmin': env['xmin'], 'ymin': env['ymin'], 'xmax': env['xmax'], 'ymax': env['ymax'], 'segSize': env['segSize']}
 
 		with connection.cursor() as cursor:
-			cursor.execute(sql)
+			cursor.execute(query, params)
 			pbf = cursor.fetchone()[0]
 	
 		response.write(pbf.tobytes())
