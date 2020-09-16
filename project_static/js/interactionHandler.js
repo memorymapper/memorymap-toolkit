@@ -273,6 +273,9 @@ MmtMap.clickInteractions = {
 	        $('.close_popup').click(function(e) {
 	            MmtMap.clickInteractions.clickPopup.remove();
 	            MmtMap.hoverInteractions.togglePopup(sourceLayer);
+	            if (audioHandler.sounds[popupPlayerId].playing()) {
+	            	audioHandler.sounds[popupPlayerId].pause();
+	        	}
 	        });
 
 	        $('.read_more').click(function(e) {

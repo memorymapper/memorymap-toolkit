@@ -32,41 +32,6 @@ def index(request):
 	return render(request, 'mmt_map/index.html', {'themes': themes})
 
 
-def feature_detail(request, pk, source_layer):
-	"""Get info about a single feature"""
-
-	if source_layer == 'points':
-		feature = get_object_or_404(Point, id=pk)
-		documents = Document.objects.filter(point=feature)
-		images = Image.objects.filter(point=feature)
-		audio = AudioFile.objects.filter(point=feature)
-	elif source_layer == 'polygons':
-		feature = get_object_or_404(Polygon, id=pk)
-		documents = Document.objects.filter(polygon=feature)
-		images = Image.objects.filter(polygon=feature)
-		audio = AudioFile.objects.filter(polygon=feature)
-	elif source_layer == 'lines':
-		feature = get_object_or_404(Line, id=pk)
-		documents = Document.objects.filter(line=feature)
-		images = Image.objects.filter(line=feature)
-		audio = AudioFile.objects.filter(line=feature)
-
-	attachments_base = {'documents': documents, 'images': images, 'audio': audio}
-
-	attachments = []
-	for key, value in attachments_base.items():
-		for v in value:
-			attachments.append(v)
-	
-	attachments = sorted(attachments, key=lambda attachment: attachment.order)
-
-	host = request.get_host()
-
-	today = datetime.today()
-
-	return render(request, 'mmt_map/feature.html', {'feature': feature, 'attachments': attachments, 'host': host, 'today': today })
-
-
 def text_only_feature_list(request):
 	"""A text only representation of features to provide access to memory map content for blind and partially-sighted users"""
 

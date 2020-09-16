@@ -173,7 +173,7 @@ Then we use Django's built-in test web server to test the site:
 python manage.py runserver 0:8000 --settings=memorymap_toolkit.settings.local
 ```
 
-In your web browser, enter the IP address of your server, followed by /memorymapper-admin/. For example, ```192.168.0.4/memorymapper-admin/```.
+In your web browser, enter the IP address of your server, followed by /memorymapper-admin/. For example, ```192.168.0.4:8000/memorymapper-admin/```.
 
 If everything worked, you will see the login page.
 
@@ -245,7 +245,7 @@ All being well, you'll see a blank Memory Map, ready for you to get started.
 
 - Add an 'About' page to let people know what your Memory Map shows
 - Change the ```WELCOME_MESSAGE``` setting in the map config
-- Design a custom map style in [Maptutnik](https://maputnik.github.io/)
+- Design a custom map style in [Maputnik](https://maputnik.github.io/)
 - Add a some points, polygons, or lines to your Memory Map
 
 ### 10. Extra - SSL
@@ -269,7 +269,7 @@ At present there is no test coverage for views, forms, or the front-end.
 
 ## Copyright
 
-Copyright (C) 2020  Duncan Hay / University College London
+Copyright (C) 2020 University College London
 
 d.hay@ucl.ac.uk
 

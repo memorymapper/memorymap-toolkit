@@ -32,7 +32,7 @@ let audioHandler = {
                         this.sounds[key].pause();
                         $('.' + key + ' .play_button').attr('src', '/static/img/play.svg');
                     }
-                } catch {
+                } catch (err) {
                     // Do nothing if no other sounds exit
                 };
             }
