@@ -273,8 +273,14 @@ MmtMap.clickInteractions = {
 	        $('.close_popup').click(function(e) {
 	            MmtMap.clickInteractions.clickPopup.remove();
 	            MmtMap.hoverInteractions.togglePopup(sourceLayer);
-	            if (audioHandler.sounds[popupPlayerId].playing()) {
-	            	audioHandler.sounds[popupPlayerId].pause();
+	            
+	            // If a sound exists and is playing, pause it
+	            try {
+	            	if (audioHandler.sounds[popupPlayerId].playing()) {
+	            		audioHandler.sounds[popupPlayerId].pause();
+	        		}
+	        	} catch (err) {
+	        		// Do nothing
 	        	}
 	        });
 

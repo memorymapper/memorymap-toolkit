@@ -63,7 +63,7 @@ sudo -u postgres psql
 ```sql
 CREATE USER memorymappper WITH PASSWORD 'your_password';
 CREATE DATABASE memorymap;
-GRANT ALL PRIVILEGES ON DATABASE memorymap TO USER memorymapper;
+GRANT ALL PRIVILEGES ON DATABASE memorymap TO memorymapper;
 \c memorymap;
 CREATE EXTENSION postgis;
 \q
@@ -209,7 +209,7 @@ Then enable the configuration and restart Apache:
 ```bash
 sudo a2dissite 000-default.conf
 sudo a2ensite www.memorymap.com.conf
-sudo apachectl restart --graceful
+sudo service apache2 reload
 ```
 
 Finally, you need to open ports 80 and 443 on the firewall:
