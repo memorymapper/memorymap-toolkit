@@ -101,7 +101,7 @@
 							<h5 class="modal-title" id="welcomeMessageLongTitle">Welcome</h5>
 						</div>
 						<div class="modal-body">
-							<p>{{ config.WELCOME_MESSAGE }}</p>
+							<p>{{ config.WELCOME_MESSAGE|safe }}</p>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
