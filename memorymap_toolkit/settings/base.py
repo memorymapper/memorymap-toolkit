@@ -164,7 +164,7 @@ CKEDITOR_CONFIGS = {
             ['Format', 'Bold', 'Italic', 'Underline'],
             ['BulletedList', 'Blockquote'],
             ['Link', 'Unlink', 'Anchor'],
-            ['Image', 'Flash', 'Table', 'HorizontalRule', 'SpecialChar'],
+            ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
             ['RemoveFormat', 'Source']
         ]
     },

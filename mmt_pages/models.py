@@ -26,5 +26,5 @@ class Page(models.Model):
 
 	def save(self, *args, **kwargs):
 		# Clean the html
-		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target']}, styles=['width', 'height'])
+		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
 		super(Page, self).save(*args, **kwargs)

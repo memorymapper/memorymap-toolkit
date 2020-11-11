@@ -50,7 +50,7 @@ MmtMap.clickInteractions = {
 	    className: 'detail_popup'
 	}),
 
-	pageHeaderHtmlTemplate: '<div class="feature_detail shadow col-12"><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><br /><img src="<%= banner %>" alt="Photo of <%= feature_name %>" class="feature_banner img-fluid" /><p class="small"><em><%= banner_copyright %></em></p><h2><%= feature_name %></h2><br /><article>',
+	pageHeaderHtmlTemplate: '<div class="feature_detail shadow col-12"><br /><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><br /><img src="<%= banner %>" alt="Photo of <%= feature_name %>" class="feature_banner img-fluid" /><p class="small"><em><%= banner_copyright %></em></p><h2><%= feature_name %></h2><br /><article>',
 
 	documentHtmlTemplate: '<%= document_body %><hr /><br />',
 

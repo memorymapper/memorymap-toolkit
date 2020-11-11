@@ -35,7 +35,7 @@ class ImageInline(admin.StackedInline):
 	model = Image
 	prepopulated_fields = {"slug": ("title",)}
 	fields = ['title', 'slug', 'order', 'published', 'file', 'description', 'copyright',]
-	extra = 0
+	extra = 1
 
 	def get_readonly_fields(self, request, obj=None):
 		fields = super(ImageInline, self).get_readonly_fields(request, obj)
@@ -46,7 +46,7 @@ class AudioFileInline(admin.StackedInline):
 	model = AudioFile
 	prepopulated_fields = {"slug": ("title",)}
 	fields =['title', 'slug', 'order', 'published', 'file',]
-	extra = 0
+	extra = 1
 
 	def get_readonly_fields(self, request, obj=None):
 		fields = super(AudioFileInline, self).get_readonly_fields(request, obj)

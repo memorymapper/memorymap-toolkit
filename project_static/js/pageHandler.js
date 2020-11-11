@@ -3,7 +3,7 @@ let pageHandler = {
 
 	overlay: false,
 
-	pageHtmlTemplate: '<div class="feature_detail shadow col-12"><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><article><%= body %><button class="btn btn-light btn-block close_feature">Close</button><br /></article></div></div></div>',
+	pageHtmlTemplate: '<div class="feature_detail shadow col-12"><br /><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><article><%= body %><button class="btn btn-light btn-block close_feature">Close</button><br /></article></div></div></div>',
 
 	getPage: function(url) {
 		$.get(url, function(data) {
