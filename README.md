@@ -154,6 +154,13 @@ mkdir media
 sudo chown -R www-data:www-data media/
 ```
 
+The do the same for the 'logs' directory, where error logs which can help diagnose problems with your site are stored:
+
+```bash
+mkdir logs
+sudo chown -R www-data:www-data logs/
+```
+
 Finally, you need to create a user on the Toolkit so you can log in to the admin site:
 
 ```bash
