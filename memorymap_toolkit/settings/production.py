@@ -4,6 +4,8 @@ from .base import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+LOG_DIR = BASE_DIR.child('logs')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -11,7 +13,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR.child('logs') + 'debug.log',
+            'filename': LOG_DIR + '/debug.log',
         },
     },
     'loggers': {
