@@ -27,8 +27,8 @@
 		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 		<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
-		{% if config.CUSTOM_CSS != 'default.css' %}
 		{% get_media_prefix as MEDIA_URL %}
+		{% if config.CUSTOM_CSS != 'default.css' %}
 		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ config.CUSTOM_CSS }}">
 		{% endif %}
 
