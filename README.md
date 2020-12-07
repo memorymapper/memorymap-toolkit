@@ -132,7 +132,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'HOST': 'localhost',
         'NAME': 'memorymap',
-        'USER': 'memorymappper',
+        'USER': 'memorymapper',
         'PASSWORD': 'your_password'
     }
 }
@@ -146,6 +146,14 @@ When you've quit nano, run the following commands to migrate the database and co
 python manage.py migrate --settings=memorymap_toolkit.settings.local
 python manage.py collectstatic --settings=memorymap_toolkit.settings.local
 ```
+If you encounter a permissions error, you may need to re-grant the postgres privileges to the dbuser
+
+```
+psql memorymap -c "GRANT ALL ON ALL TABLES IN SCHEMA public to memorymapper;"
+psql memorymap -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to memorymapper;"
+psql memorymap -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to memorymapper;"
+```
+
 
 You then need to create a 'media' folder to store file uploads to your memory map. This needs to be owned by the user/group of your web server:
 
@@ -180,7 +188,7 @@ Then we use Django's built-in test web server to test the site:
 python manage.py runserver 0:8000 --settings=memorymap_toolkit.settings.local
 ```
 
-In your web browser, enter the IP address of your server, followed by /memorymapper-admin/. For example, ```192.168.0.4:8000/memorymapper-admin/```.
+In your web browser, enter the IP address of your server, followed by /admin/. For example, ```192.168.0.4:8000/admin/```.
 
 If everything worked, you will see the login page.
 
