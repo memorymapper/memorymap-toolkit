@@ -38,5 +38,4 @@ RUN apt-get -y update \
 		&& rm -rf wheels \
 		&& chown -R django-data:django-data $HOME
 USER 295
-#CMD /usr/bin/sh ; sleep infinity
-CMD gunicorn --log-file=-  memorymap_toolkit.wsgi --bind 0.0.0.0:8000
+CMD /usr/bin/python3 manage.py collectstatic --settings=memorymap_toolkit.settings.local ; /usr/local/bin/gunicorn  --workers=2 --threads=4 --worker-class=gthread --log-file=- -b 0.0.0.0:8000  memorymap_toolkit.wsgi
