@@ -280,6 +280,17 @@ python manage.py test mmt_map.tests; python manage.py test mmt_pages.tests
 
 At present there is no test coverage for views, forms, or the front-end.
 
+## Docker
+
+Docker uses a different settings file (docker-settings.py) which looks for environmental variables to connect to the database. 
+Create the Database as normal. 
+The 'media' directory is mounted as a volume. 
+
+Build the Dockerfile
+``` docker build . -t memorymapper```
+
+Run (interactively)
+```docker run -e SECRET_KEY=<secret_key> -e DB_HOSST=<db_host> -e DB_USERNAME=<db_username> -e DB_PASSWORD=<db_password> -e DB_NAME=memorymap -e ALLOWED_HOSTS=172.17.0.2 -e GOOGLE_ANALYTICS_PROPERTY_ID=<id> --mount source=media,target=/home/django-data/media  -it memorymapper  /bin/bash```
 
 
 ## Copyright

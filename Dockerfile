@@ -16,7 +16,8 @@ WORKDIR /usr/src/app
 COPY . .
 RUN pip3 install --upgrade pip  \
 		&& pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
-		&& pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels install gunicorn
+		&& pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels install gunicorn \
+		&& mkdir ./logs
 #########
 # Final #
 #########
@@ -35,8 +36,7 @@ RUN apt-get -y update \
 		&& rm -rf /var/lib/{apt,dpkg,cache,log}/ \
 		&& pip3 install --no-cache $HOME/wheels/* \
 		&& rm -rf wheels \
-		&& mkdir media \
-		&& ln -s /dev/stdout ./logs \
 		&& chown -R django-data:django-data $HOME
 USER 295
-CMD /usr/bin/sh ; sleep infinity
+#CMD /usr/bin/sh ; sleep infinity
+CMD gunicorn --log-file=-  memorymap_toolkit.wsgi --bind 0.0.0.0:8000
