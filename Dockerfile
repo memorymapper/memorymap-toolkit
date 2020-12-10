@@ -5,8 +5,6 @@ FROM debian:buster-slim as build
 ENV	PYTHONDONTWRITEBYTECODE 1 
 ENV	PYTHONUNBUFFERED 1 
 ENV MEMORYMAPPER_VERSION="master" \
-		HOME=/home/app \
-		APP_HOME=/home/app/web \
 		PACKAGES="python3-pip python3-venv postgresql postgresql-contrib postgis python3-dev libpq-dev" \
 		DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -38,4 +36,5 @@ RUN apt-get -y update \
 		&& rm -rf wheels \
 		&& chown -R django-data:django-data $HOME
 USER 295
-CMD /usr/bin/python3 manage.py collectstatic --settings=memorymap_toolkit.settings.local ; /usr/local/bin/gunicorn  --workers=2 --threads=4 --worker-class=gthread --log-file=- -b 0.0.0.0:8000  memorymap_toolkit.wsgi
+EXPOSE 8000
+CMD /usr/bin/python3 manage.py collectstatic --noinput --settings=memorymap_toolkit.settings.local ; /usr/local/bin/gunicorn  --workers=2 --threads=4 --worker-class=gthread --log-file=-  memorymap_toolkit.wsgi
