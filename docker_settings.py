@@ -2,7 +2,7 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY") 
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(',')
 STATIC_ROOT = "/home/django-data/static"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
