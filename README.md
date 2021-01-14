@@ -132,7 +132,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'HOST': 'localhost',
         'NAME': 'memorymap',
-        'USER': 'memorymappper',
+        'USER': 'memorymapper',
         'PASSWORD': 'your_password'
     }
 }
@@ -146,6 +146,14 @@ When you've quit nano, run the following commands to migrate the database and co
 python manage.py migrate --settings=memorymap_toolkit.settings.local
 python manage.py collectstatic --settings=memorymap_toolkit.settings.local
 ```
+If you encounter a permissions error, you may need to re-grant the postgres privileges to the dbuser
+
+```
+psql memorymap -c "GRANT ALL ON ALL TABLES IN SCHEMA public to memorymapper;"
+psql memorymap -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to memorymapper;"
+psql memorymap -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to memorymapper;"
+```
+
 
 You then need to create a 'media' folder to store file uploads to your memory map. This needs to be owned by the user/group of your web server:
 
@@ -180,7 +188,7 @@ Then we use Django's built-in test web server to test the site:
 python manage.py runserver 0:8000 --settings=memorymap_toolkit.settings.local
 ```
 
-In your web browser, enter the IP address of your server, followed by /memorymapper-admin/. For example, ```192.168.0.4:8000/memorymapper-admin/```.
+In your web browser, enter the IP address of your server, followed by /admin/. For example, ```192.168.0.4:8000/admin/```.
 
 If everything worked, you will see the login page.
 
@@ -272,7 +280,19 @@ python manage.py test mmt_map.tests; python manage.py test mmt_pages.tests
 
 At present there is no test coverage for views, forms, or the front-end.
 
+## Docker
 
+Docker uses a different settings file (docker-settings.py) which looks for environmental variables to connect to the database; pass the environmental variables to the container when starting it. 
+Create the Database as normal. 
+The 'media' directory is mounted as a volume. 
+
+Build the Dockerfile
+``` docker build . -t memorymapper```
+
+Run
+```docker run -e SECRET_KEY=<secret_key> -e DB_HOSST=<db_host> -e DB_USERNAME=<db_username> -e DB_PASSWORD=<db_password> -e DB_NAME=memorymap -e ALLOWED_HOSTS=172.17.0.2 -e GOOGLE_ANALYTICS_PROPERTY_ID=<id> --mount source=media,target=/home/django-data/media  memorymapper ```
+
+The container should run alongside an apache/nginx container to reverse proxy and serve the static files. 
 
 ## Copyright
 
