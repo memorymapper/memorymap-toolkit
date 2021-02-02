@@ -164,7 +164,7 @@ CKEDITOR_CONFIGS = {
             ['Format', 'Bold', 'Italic', 'Underline'],
             ['BulletedList', 'Blockquote'],
             ['Link', 'Unlink', 'Anchor'],
-            ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
+            ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'],
             ['RemoveFormat', 'Source']
         ]
     },
@@ -208,12 +208,13 @@ CONSTANCE_CONFIG = {
     'SWITCHABLE_LAYERS': ('', 'A comma-separated list of map layer IDs from your map style. This will allow visitors to your site to switch layers on and off from the menu bar. Particularly useful if you are using raster layers, for example for showing historic maps.'),
     'CUSTOM_CSS': ('default.css', 'Upload a css file to customise the look of your Memory Map', 'file_field'),
     'FEATURE_LABEL_FONT': ('Open Sans Regular', 'The font to use for the interactive feature labels. Make sure this is in your map style\'s font stack (see https://docs.mapbox.com/mapbox-gl-js/style-spec/glyphs/)'),
-    'CACHE_TIMEOUT': (0, 'If you have a large number of interactive features and heavy site traffic, you can optionally cache them to reduce load on the database, at the expense of having changes to your map visible on the website immediately. This setting determines the number of minutes the tiles are cached for.')
+    'CACHE_TIMEOUT': (0, 'If you have a large number of interactive features and heavy site traffic, you can optionally cache them to reduce load on the database, at the expense of having changes to your map visible on the website immediately. This setting determines the number of minutes the tiles are cached for.'),
+    'MAPBOX_VERSION': ('v1.11.0', 'The version of the MapboxGL library you want to use to display your map. Versions above v1.11.0 hosted by Mapbox require a Mapbox key.')
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'SITE_METADATA', 'CACHE_TIMEOUT'),
-    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING'),
+    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
     'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
 }
 
