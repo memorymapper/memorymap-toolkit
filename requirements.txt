@@ -24,7 +24,7 @@ easy-thumbnails==2.7
 html2text==2020.1.16
 idna==2.9
 itypes==1.2.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 Markdown==3.2.2
 MarkupSafe==1.1.1
 packaging==20.4
