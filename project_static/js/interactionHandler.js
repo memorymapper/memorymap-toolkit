@@ -87,7 +87,7 @@ MmtMap.clickInteractions = {
 	        page = pageHeader({
 	            banner: data.properties.banner_image,
 	            feature_name: data.properties.name,
-	            banner_copyright: data.properties.banner_copyright
+	            banner_copyright: data.properties.banner_image_copyright
 	        });
 
 	        if (data.properties.popup_audio_file != null) {
