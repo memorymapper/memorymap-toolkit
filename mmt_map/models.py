@@ -170,6 +170,7 @@ class Document(AbstractAttachment):
 		# Convert HTML to Markdown so you can run the footnote filter on it, then save as self.body_processed, which is what gets displayed on the site
 		h = html2text.HTML2Text()
 		h.ignore_images = False
+		h.unicode_snob = True
 		body_markdown = h.handle(self.body)
 		self.body_processed = markdown.markdown(body_markdown, extensions=['markdown.extensions.footnotes'])
 		super(Document, self).save(*args, **kwargs)
