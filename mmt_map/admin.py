@@ -68,6 +68,8 @@ class PointAdmin(admin.GeoModelAdmin):
 
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
 
+	search_fields = ['name']
+
 	class Meta:
 		model = Point
 
@@ -92,6 +94,8 @@ class PolygonAdmin(admin.GeoModelAdmin):
 
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
 
+	search_fields = ['name']
+
 	class Meta:
 		model = Polygon
 
@@ -113,6 +117,8 @@ class LineAdmin(admin.GeoModelAdmin):
 	list_editable = ['theme', 'weight', 'published']
 
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
+
+	search_fields = ['name']
 
 	class Meta:
 		model = Line
