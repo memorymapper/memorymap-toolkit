@@ -193,6 +193,10 @@ CONSTANCE_CONFIG = {
     'LOGO_IMAGE': ('default.png', 'You can upload an image to display in the menu bar here', 'image_field'),
     'MAP_CENTER_LATITUDE': (0.0, 'The latitude of the centre point of the map'),
     'MAP_CENTER_LONGITUDE': (0.0, 'The longitude of the centre point of the map'),
+    'BOUNDS_SW_LATITUDE': (0.0, 'The latitude of the south-west corner of the map'),
+    'BOUNDS_SW_LONGITUDE': (0.0, 'The longitude of the south-west corner of the map'),
+    'BOUNDS_NE_LATITUDE': (0.0, 'The latitude of the north-east corner of the map'),
+    'BOUNDS_NE_LONGITUDE': (0.0, 'The longitude of the south-east corner of the map'),
     'ZOOM': (15.5, 'The default zoom level of the map'),
     'MIN_ZOOM': (9.5, 'The lowest zoom level of the map'),
     'MAX_ZOOM': (18.4, 'The highest zoom level of the map'),
@@ -209,12 +213,14 @@ CONSTANCE_CONFIG = {
     'CUSTOM_CSS': ('default.css', 'Upload a css file to customise the look of your Memory Map', 'file_field'),
     'FEATURE_LABEL_FONT': ('Open Sans Regular', 'The font to use for the interactive feature labels. Make sure this is in your map style\'s font stack (see https://docs.mapbox.com/mapbox-gl-js/style-spec/glyphs/)'),
     'CACHE_TIMEOUT': (0, 'If you have a large number of interactive features and heavy site traffic, you can optionally cache them to reduce load on the database, at the expense of having changes to your map visible on the website immediately. This setting determines the number of minutes the tiles are cached for.'),
-    'MAPBOX_VERSION': ('v1.11.0', 'The version of the MapboxGL library you want to use to display your map. Versions above v1.11.0 hosted by Mapbox require a Mapbox key.')
+    'MAPBOX_VERSION': ('v1.11.0', 'The version of the MapboxGL library you want to use to display your map. Versions above v1.11.0 hosted by Mapbox require a Mapbox key.'),
+    'LAYERS_MENU_TITLE': ('Themes', 'The name of the switchable layers menu.'),
+    'SHOW_AUDIO_PLAYER_TITLES': (True, 'Whether or not audio player titles are visible. Useful if your audio has the same title as the map feature that it\'s attached to.')
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'SITE_METADATA', 'CACHE_TIMEOUT'),
-    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
+    'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT'),
+    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
     'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
 }
 

@@ -36,6 +36,10 @@ let map = new mapboxgl.Map({
     antialias: true
 });
 
+if (MmtMap.settings.maxBounds) {
+    map.setMaxBounds(MmtMap.settings.maxBounds);
+}
+
 
 // Load the map style and add the switchable layers to the menu bar. These things are together as the style definition needs to be loaded in order to populate the switchable layers menu
 

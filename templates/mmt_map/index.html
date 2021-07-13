@@ -19,10 +19,13 @@
 mapboxgl.accessToken = '{{ config.MAPBOX_KEY }}';
 
 const MmtMap = {
-	
+
 	settings: {
 		mapCenter: [{{ config.MAP_CENTER_LONGITUDE }}, {{ config.MAP_CENTER_LATITUDE }}],
 		zoom: {{ config.ZOOM }},
+		{% if bounds %}
+		maxBounds: {{ bounds }},
+		{% endif %}
 		maxZoom: {{ config.MAX_ZOOM }},
 		minZoom: {{ config.MIN_ZOOM }},
 		pitch: {{ config.PITCH }},

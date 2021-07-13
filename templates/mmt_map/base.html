@@ -32,6 +32,14 @@
 		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ config.CUSTOM_CSS }}">
 		{% endif %}
 
+		{% if config.SHOW_AUDIO_PLAYER_TITLES == False %}
+		<style type="text/css">
+			.player_title {
+				display: none;
+			}
+		</style>
+		{% endif %}
+
 		<!-- Howler -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.core.min.js"></script>
 
@@ -77,7 +85,7 @@
 						{% if themes %}
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Themes
+							{{ config.LAYERS_MENU_TITLE }}
 							</a>
 							<div class="dropdown-menu" id="themes" aria-labelledby="navbarDropdown">
 							</div>

@@ -29,7 +29,14 @@ def index(request):
 	themes = Theme.objects.all()
 	pages = Page.objects.all().order_by('order')
 
-	return render(request, 'mmt_map/index.html', {'themes': themes})
+	bounds = None
+	
+	if (config.BOUNDS_SW_LONGITUDE != 0.0) and (config.BOUNDS_SW_LATITUDE != 0.0) and (config.BOUNDS_NE_LATITUDE != 0.0) and (config.BOUNDS_NE_LONGITUDE != 0.0):
+
+		bounds = [[config.BOUNDS_SW_LONGITUDE,config.BOUNDS_SW_LATITUDE],[config.BOUNDS_NE_LONGITUDE,config.BOUNDS_NE_LATITUDE]]
+
+
+	return render(request, 'mmt_map/index.html', {'themes': themes, 'bounds': bounds})
 
 
 def text_only_feature_list(request):

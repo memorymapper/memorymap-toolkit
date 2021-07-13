@@ -41,7 +41,6 @@ window.addEventListener('touchstart', function() {
 
 // Click interactions
 
-
 MmtMap.clickInteractions = {
 
 	clickPopup: new mapboxgl.Popup({
@@ -54,7 +53,7 @@ MmtMap.clickInteractions = {
 
 	documentHtmlTemplate: '<%= document_body %><hr /><br />',
 
-	audioFileHtmlTemplate: '<h3>Listen: <%= title %></h3><div class="player <%= slug %>-detail" id="<%= slug %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= file %>" data-title="<%= title %>" data-player_id="<%= slug %>-detail"><img src="/static/img/play.svg" alt="Play audio file of <%= title %>" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div>',
+	audioFileHtmlTemplate: '<span class="player_title"><h3>Listen: <%= title %></h3></span><div class="player <%= slug %>-detail" id="<%= slug %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= file %>" data-title="<%= title %>" data-player_id="<%= slug %>-detail"><img src="/static/img/play.svg" alt="Play audio file of <%= title %>" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div>',
 
 	imageHtmlTemplate: '<div class="image_container"><img src="<%= file %>" alt="<%= title %>" style="width: 100%;" class="gather_for_modal"><p class="small"><em><%= title %></em></p></div>',
 
@@ -208,7 +207,7 @@ MmtMap.clickInteractions = {
 
 	popupHtmlTemplate: '<div class="popup_header"><img src="<%= image %>" alt="Image of <%= name %>" /><p class="text-center feature_title"><%= name %></p><br /></div>',
 
-	popupAudioFileHtmlTemplate: '<div class="player popup_player <%= playerId %>" id="<%= playerId %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= url %>"><img src="/static/img/play.svg" alt="play" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div><p class="text-center"><strong>Listen: </strong><%= playerTitle %></p></span><hr />',
+	popupAudioFileHtmlTemplate: '<div class="player popup_player <%= playerId %>" id="<%= playerId %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= url %>"><img src="/static/img/play.svg" alt="play" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div><p class="text-center player_title"><strong>Listen: </strong><%= playerTitle %></p><hr />',
 
 
 	clickFeature: function(source, sourceLayer, feature, id, coords) {
