@@ -192,3 +192,7 @@ class AudioFile(AbstractAttachment):
 	"""An audio file associated with a map feature"""
 	file = FilerFileField(null=True, blank=True, related_name='%(app_label)s_%(class)s_audio_file', on_delete=models.SET_NULL)
 
+	def get_audio_file_url(self):
+		if self.file:
+			return self.file.url
+

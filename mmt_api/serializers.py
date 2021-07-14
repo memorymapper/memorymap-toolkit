@@ -54,9 +54,10 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class AudioFileSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)
+	file = serializers.CharField(source='get_audio_file_url', read_only=True)
 	class Meta:
 		model = AudioFile
-		fields = ('attachment_type', 'title', 'slug')
+		fields = ('attachment_type', 'title', 'slug', 'file')
 
 
 
