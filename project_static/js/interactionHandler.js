@@ -207,23 +207,33 @@ MmtMap.clickInteractions = {
 
 	popupHtmlTemplate: '<div class="popup_header"><img src="<%= image %>" alt="Image of <%= name %>" /><p class="text-center feature_title"><%= name %></p><br /></div>',
 
+	noThumbPopupHtmlTemplate: '<div class="popup_header" style="margin-top: 10px;"><p class="text-center feature_title"><%= name %></p><br /></div>',
+
 	popupAudioFileHtmlTemplate: '<div class="player popup_player <%= playerId %>" id="<%= playerId %>"><div id="play_button_container"><a href="#" class="play" data-audio="<%= url %>"><img src="/static/img/play.svg" alt="play" class="play_button" /></a></div><div class="player_display"><span class="player_timer">--:--</span><div class="progress_bar_container"><div class="progress_bar_fill"></div></div></div></div><p class="text-center player_title"><strong>Listen: </strong><%= playerTitle %></p><hr />',
 
 
 	clickFeature: function(source, sourceLayer, feature, id, coords) {
 		// Loads the feature from the server and adds a large click popup with an audio player (if there is an audio file related to it)
 
+
+
 		$.get('api/1.0/features/' + sourceLayer + '/' + id, function(data) {
 	        // Construct the HTML for the popup and add it to the map
-
 	        let popupPlayerId = undefined;
-	        let popupHtml = _.template(MmtMap.clickInteractions.popupHtmlTemplate);
+	        let popupHtml = undefined;
 
-	        popupHtml = popupHtml({
-	        	image: data.properties.popup_image,
-	        	name: data.properties.name
-	        });
-
+	        if (data.properties.popup_image.length > 0) {
+            	popupHtml = _.template(MmtMap.clickInteractions.popupHtmlTemplate);
+            	popupHtml = popupHtml({
+	        		image: data.properties.popup_image,
+	        		name: data.properties.name
+	        	});
+        	} else {
+        		popupHtml = _.template(MmtMap.clickInteractions.noThumbPopupHtmlTemplate);
+        		popupHtml = popupHtml({
+	        		name: data.properties.name
+	        	});
+        	}
 
 	        // If there is an audio file attached to the feature, add a player
 	        if (data.properties.popup_audio_file != null) {
@@ -235,10 +245,8 @@ MmtMap.clickInteractions = {
 	            	playerId: popupPlayerId,
 	            	url: data.properties.popup_audio_file.url,
 	            	playerTitle: data.properties.popup_audio_title
-	            }); 
-	            popupHtml = popupHtml +  popupAudioFileHtml;   
+	            });
 	        }
-
 
 
 	        let buttonHtml = '<div class="text-center"><br /><button type="button" class="btn btn-sm btn-light read_more" href="#">Read More</button> <button type="button" class="btn btn-sm btn-light close_popup">Close</button></div>';
