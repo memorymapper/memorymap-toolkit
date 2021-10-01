@@ -246,6 +246,8 @@ MmtMap.clickInteractions = {
 	            	url: data.properties.popup_audio_file.url,
 	            	playerTitle: data.properties.popup_audio_title
 	            });
+
+	            popupHtml = popupHtml + popupAudioFileHtml;
 	        }
 
 
