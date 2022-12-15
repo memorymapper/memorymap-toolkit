@@ -39,5 +39,5 @@ sqlparse==0.3.1
 Unidecode==1.1.1
 Unipath==1.1
 uritemplate==3.0.1
-urllib3==1.25.9
+urllib3==1.26.5
 webencodings==0.5.1
