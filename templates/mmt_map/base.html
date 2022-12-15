@@ -91,6 +91,17 @@
 							</div>
 						</li>
 						{% endif %}
+						{% if tag_lists %}
+							{% for tl in tag_lists %}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									{{ tl.name }}
+								</a>
+								<div class="dropdown-menu" id="taglist_{{ tl.id }}" aria-labelledby="navbarDropdown">
+								</div>
+							</li>
+							{% endfor %}
+						{% endif %}
 					</ul>
 					<form class="form-inline my-2 my-lg-0">
 						<input class="form-control mr-sm-2" placeholder="Search" aria-label="Search" id="map_search">

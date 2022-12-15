@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'mmt_api',
     # 3rd Party
     'easy_thumbnails',
+    'rest_framework',
     'filer',
     'mptt',
     'ckeditor',

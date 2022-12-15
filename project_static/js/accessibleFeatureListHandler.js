@@ -8,8 +8,15 @@ for (let i=0; i < MmtMap.themes.length; i++) {
     $('#themes').append(theme);
 }
 
+// Add the tags to the menu bar, in the correct tag lists
 
-
+for (let i=0; i < MmtMap.tagLists.length; i++) {
+    let tl = MmtMap.tagLists[i];
+    $(tl.id).append('<a href="#" class="tag dropdown-item">All</a>');
+    tl.tags.forEach((tag) => {
+        $(tl.id).append('<a href="#" class="tag dropdown-item" ' +'data-tag="' + tag +'">' + tag + '</a>');
+    });
+}
 
 MmtFeatureList.populateList = function(url, params) {
 	

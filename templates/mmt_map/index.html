@@ -44,6 +44,16 @@ const MmtMap = {
 		{% endfor %}
 	],
 
+	tagLists: [
+		{% for tl in tag_lists %}
+		{
+			'id': '#taglist_{{ tl.id }}',
+			'name': '{{ tl.name }}',
+			'tags': [{% for tag in tl.tags.all %}"{{ tag }}",{% endfor %}]
+		},
+		{% endfor %}
+	],
+
 	{% if themes %}
 	themeStyleExpressions: [
     'case',

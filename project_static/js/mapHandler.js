@@ -1,12 +1,23 @@
 // Add the themes to the menu bar
 
-$('#themes').append('<a href="#" class="theme dropdown-item">All</a>')
+$('#themes').append('<a href="#" class="theme dropdown-item">All</a>');
 
 for (let i=0; i < MmtMap.themes.length; i++) {
     let themes = MmtMap.themes;
     let theme = '<a href="#" class="theme dropdown-item ' + themes[i].name +  '" data-key="' + themes[i].id + '" data-color="' + themes[i].color +'" style="color: '+ themes[i].color +'">' + themes[i].name + '</a>';
     $('#themes').append(theme);
 }
+
+// Add the tags to the menu bar, in the correct tag lists
+
+for (let i=0; i < MmtMap.tagLists.length; i++) {
+    let tl = MmtMap.tagLists[i];
+    $(tl.id).append('<a href="#" class="tag dropdown-item">All</a>');
+    tl.tags.forEach((tag) => {
+        $(tl.id).append('<a href="#" class="tag dropdown-item" ' +'data-tag="' + tag +'">' + tag + '</a>');
+    });
+}
+
 
 
 // If there are switchable layers, add a #maps dropdown to the menu bar

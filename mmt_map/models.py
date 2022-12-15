@@ -38,6 +38,17 @@ class Theme(models.Model):
 		return self.name
 
 
+class TagList(models.Model):
+	"""A list of tag instances for display in a dropdown in the frontend"""
+	name = models.CharField(max_length=64)
+	tags = models.ManyToManyField(Tag)
+	published = models.BooleanField(default=False)
+	order = models.PositiveSmallIntegerField(default=0)
+
+	def __str__(self):
+		return self.name
+
+
 class AbstractFeature(models.Model):
 	"""The model class from which all feature objects derive"""
 	name = models.CharField(max_length=140)

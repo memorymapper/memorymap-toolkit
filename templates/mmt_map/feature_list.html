@@ -27,6 +27,7 @@
 		listUrl: '{% url 'feature_list' %}',
 		themeUrl: '{% url 'get_features_by_theme' %}',
 		searchUrl: '{% url 'search_features' %}',
+		tagUrl: '{% url 'get_features_by_tag' %}',
 		allSites: true
 	}
 
@@ -37,6 +38,16 @@
 				'id': '{{ theme.id }}',
 				'name': '{{ theme }}',
 				'color': '{{ theme.color }}'
+			},
+			{% endfor %}
+		],
+
+		tagLists: [
+			{% for tl in tag_lists %}
+			{
+				'id': '#taglist_{{ tl.id }}',
+				'name': '{{ tl.name }}',
+				'tags': [{% for tag in tl.tags.all %}"{{ tag }}",{% endfor %}]
 			},
 			{% endfor %}
 		]

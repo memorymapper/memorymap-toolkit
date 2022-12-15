@@ -12,6 +12,7 @@ urlpatterns = [
 	path('1.0/features/<str:source_layer>/<int:pk>', views.feature, name='feature'),
 	path('1.0/features/search/', views.search_features, name='search_features'),
 	path('1.0/features/theme/', views.get_features_by_theme, name='get_features_by_theme'),
+	path('1.0/features/tag/', views.get_features_by_tag, name='get_features_by_tag'),
     path('1.0/features/attachments/documents/<int:pk>', views.document, name='document'),
     path('1.0/features/<str:source_layer>/<int:pk>/attachments/', views.feature_attachments, name='attachments'),
     path('1.0/pages/<str:slug>', views.page, name='page'),

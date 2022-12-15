@@ -53,3 +53,22 @@ $('.theme').click(function(e) {
 		MmtFeatureList.allSites = false;
 	}
 });
+
+/* Tag filtering */
+
+$('.tag').click(function(e) {
+	e.preventDefault();
+	tag = $(this).data('tag');
+	if (tag == undefined) {
+		$('.feature_list').empty();
+		MmtFeatureList.populateList(MmtFeatureList.listUrl, {page: 1});
+		$('.results_title').html('Place Index');
+		MmtFeatureList.allSites = true;
+	} else {
+		$('.feature_list').empty();
+		url = MmtFeatureList.tagUrl;
+		MmtFeatureList.populateList(url, {tags: tag, page: 1});
+		$('.results_title').html('Places Tagged "' + tag + '"');
+		MmtFeatureList.allSites = false;
+	}
+});

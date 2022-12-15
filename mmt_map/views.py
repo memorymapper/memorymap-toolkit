@@ -17,7 +17,7 @@ from psycopg2 import sql
 from constance import config
 
 # Memory Map Toolkit
-from .models import Point, Line, Polygon, Theme, Document, Image, AudioFile
+from .models import Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList
 from mmt_pages.models import Page
 from mmt_api.serializers import PointSerializer, PolygonSerializer, PointDetailSerializer, DocumentSerializer
 from .vector_tile_helpers import tileIsValid, tileToEnvelope
@@ -28,6 +28,7 @@ def index(request):
 
 	themes = Theme.objects.all()
 	pages = Page.objects.all().order_by('order')
+	tag_lists = TagList.objects.filter(published=True).order_by('order')
 
 	bounds = None
 	
@@ -36,15 +37,16 @@ def index(request):
 		bounds = [[config.BOUNDS_SW_LONGITUDE,config.BOUNDS_SW_LATITUDE],[config.BOUNDS_NE_LONGITUDE,config.BOUNDS_NE_LATITUDE]]
 
 
-	return render(request, 'mmt_map/index.html', {'themes': themes, 'bounds': bounds})
+	return render(request, 'mmt_map/index.html', {'themes': themes, 'bounds': bounds, 'tag_lists': tag_lists})
 
 
 def text_only_feature_list(request):
 	"""A text only representation of features to provide access to memory map content for blind and partially-sighted users"""
 
 	themes = Theme.objects.all()
+	tag_lists = TagList.objects.filter(published=True).order_by('order')
 
-	return render(request, 'mmt_map/feature_list.html', {'themes': themes})
+	return render(request, 'mmt_map/feature_list.html', {'themes': themes, 'tag_lists': tag_lists})
 
 
 # Vector tiles are optionally cached to stop the database being spammed to heavily.
