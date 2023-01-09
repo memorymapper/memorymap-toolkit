@@ -30,7 +30,7 @@ MmtMap.hoverInteractions = {
 	    let name = feature.properties.name;
 		let thumbnail = feature.properties.thumbnail_url;
 
-		if (MmtMap.settings.hoverThumbs) {
+		if (MmtMap.settings.hoverThumbs && thumbnail) {
 	    	MmtMap.hoverInteractions.smallPopup.setLngLat(coords).setHTML('<div class="popup_header"><img alt="location thumbnail" src="' + thumbnail + '" class="m-0 p-0" /img><p class="m-0 p-0 text-center">' + name + '</p></div>').addTo(map);
 		} else {
 			MmtMap.hoverInteractions.smallPopup.setLngLat(coords).setHTML('<p class="m-0 p-0 text-center">' + name + '</p>').addTo(map);
