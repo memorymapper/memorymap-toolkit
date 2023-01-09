@@ -80,7 +80,7 @@ def vector_tile(request, z, x, y, tile_format):
 		),
 		"mvtgeom" AS (
 			SELECT ST_AsMVTGeom(ST_Transform("t"."geom", 3857), "bounds"."b2d") AS "geom", 
-				   "id", "name", "weight", "theme_id", "tag_str"
+				   "id", "name", "weight", "theme_id", "tag_str", "thumbnail_url"
 			FROM  {table} "t", "bounds"
 			WHERE ST_Intersects("t"."geom", ST_Transform("bounds"."geom", 4326)) AND "published" = TRUE
 		) 

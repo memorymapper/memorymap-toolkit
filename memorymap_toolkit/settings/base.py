@@ -177,6 +177,7 @@ THUMBNAIL_ALIASES = {
     '': {
         'site_small': {'size': (300, 175), 'crop': 'smart', 'upscale': True},
         'banner': {'size': (600, 350), 'crop': 'smart', 'upscale': True},
+        'hover_thumb': {'size': (100, 100), 'crop': 'smart', 'upscale': True},
     },
 }
 
@@ -216,12 +217,13 @@ CONSTANCE_CONFIG = {
     'CACHE_TIMEOUT': (0, 'If you have a large number of interactive features and heavy site traffic, you can optionally cache them to reduce load on the database, at the expense of having changes to your map visible on the website immediately. This setting determines the number of minutes the tiles are cached for.'),
     'MAPBOX_VERSION': ('v1.11.0', 'The version of the MapboxGL library you want to use to display your map. Versions above v1.11.0 hosted by Mapbox require a Mapbox key.'),
     'LAYERS_MENU_TITLE': ('Themes', 'The name of the switchable layers menu.'),
-    'SHOW_AUDIO_PLAYER_TITLES': (True, 'Whether or not audio player titles are visible. Useful if your audio has the same title as the map feature that it\'s attached to.')
+    'SHOW_AUDIO_PLAYER_TITLES': (True, 'Whether or not audio player titles are visible. Useful if your audio has the same title as the map feature that it\'s attached to.'),
+    'HOVER_THUMBNAILS': (True, 'Whether image thumbnails are shown on hovering over a map feature'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT'),
-    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
+    'Site Settings': ('SITE_TITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT', 'HOVER_THUMBNAILS'),
+    'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_SW_LONGITUDE',  'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
     'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
 }
 

@@ -448,6 +448,12 @@ article img {
 		width: 22rem;
 	}
 
+	.hover_popup .mapboxgl-popup-content {
+		width: 4rem;
+		margin: 0;
+		padding: 0;
+	}
+
 	.popup_player #play_button_container {
 		border-radius: 2.5rem;
 		height: 2.5rem;
@@ -463,6 +469,9 @@ article img {
 	}
 	.detail_popup .mapboxgl-popup-content {
 		width: 22rem;
+	}
+	.hover_popup .mapboxgl-popup-content {
+		width: 6rem;
 	}
 }
 

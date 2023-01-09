@@ -8,7 +8,8 @@ MmtMap.hoverInteractions = {
 
 	smallPopup: new mapboxgl.Popup({
     	closeButton: false,
-    	closeOnClick: false
+    	closeOnClick: false,
+		className: 'hover_popup'
 	}),
 	
 	togglePopup: function(sourceLayer) {
@@ -27,7 +28,13 @@ MmtMap.hoverInteractions = {
 	    // Popup
 	    map.getCanvas().style.cursor = 'pointer';
 	    let name = feature.properties.name;
-	    MmtMap.hoverInteractions.smallPopup.setLngLat(coords).setHTML('<p class="text-center">' + name + '</p>').addTo(map);
+		let thumbnail = feature.properties.thumbnail_url;
+
+		if (MmtMap.settings.hoverThumbs) {
+	    	MmtMap.hoverInteractions.smallPopup.setLngLat(coords).setHTML('<div class="popup_header"><img alt="location thumbnail" src="' + thumbnail + '" class="m-0 p-0" /img><p class="m-0 p-0 text-center">' + name + '</p></div>').addTo(map);
+		} else {
+			MmtMap.hoverInteractions.smallPopup.setLngLat(coords).setHTML('<p class="m-0 p-0 text-center">' + name + '</p>').addTo(map);
+		}
 	}
 }
 

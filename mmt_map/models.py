@@ -57,6 +57,7 @@ class AbstractFeature(models.Model):
 	banner_image = models.ImageField(upload_to=feature_directory_path, null=True, blank=True, verbose_name='Banner Image')
 	banner_image_copyright = models.CharField(max_length=240, blank=True)
 	popup_image = models.ImageField(upload_to=feature_directory_path, null=True, blank=True)
+	thumbnail_url = models.CharField(max_length=300, blank=True)
 	popup_audio_title = models.CharField(max_length=128, blank=True)
 	popup_audio_slug = models.SlugField(max_length=128, blank=True)
 	popup_audio_file = FilerFileField(null=True, blank=True, related_name='%(app_label)s_%(class)s_popup_audio_file', on_delete=models.SET_NULL)
@@ -88,12 +89,12 @@ class AbstractFeature(models.Model):
 		else:
 			return ''
 
-	def __str__(self):
-		return self.name
-
 	def get_absolute_url(self):
 		feature_type = self.get_type()
 		return '/?feature_type=' + feature_type + '&id=' + str(self.id)
+
+	def __str__(self):
+		return self.name
 
 	class Meta:
 		abstract = True
@@ -106,7 +107,12 @@ class Point(AbstractFeature):
 	def save(self, *args, **kwargs):
 		# Model has to be saved first to access the tags
 		super(Point, self).save(*args, **kwargs)
-		#self.tag_str = ', '.join(self.tags.names())
+		self.tag_str = ', '.join(self.tags.names())
+		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+		if self.popup_image:
+			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			self.thumbnail_url = thumbnail_url
+		super(Point, self).save(*args, **kwargs)
 
 
 
@@ -117,6 +123,10 @@ class Polygon(AbstractFeature):
 	def save(self, *args, **kwargs):
 		super(Polygon, self).save(*args, **kwargs)
 		self.tag_str = ', '.join(self.tags.names())
+		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+		if self.popup_image:
+			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			self.thumbnail_url = thumbnail_url
 		super(Polygon, self).save(*args, **kwargs)
 
 
@@ -127,6 +137,10 @@ class Line(AbstractFeature):
 	def save(self, *args, **kwargs):
 		super(Line, self).save(*args, **kwargs)
 		self.tag_str = ', '.join(self.tags.names())
+		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+		if self.popup_image:
+			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			self.thumbnail_url = thumbnail_url
 		super(Line, self).save(*args, **kwargs)
 
 
