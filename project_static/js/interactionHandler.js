@@ -56,7 +56,11 @@ MmtMap.clickInteractions = {
 	    className: 'detail_popup'
 	}),
 
-	pageHeaderHtmlTemplate: '<div class="feature_detail shadow col-12"><br /><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><br /><img src="<%= banner %>" alt="Photo of <%= feature_name %>" class="feature_banner img-fluid" /><p class="small"><em><%= banner_copyright %></em></p><h2><%= feature_name %></h2><br /><article>',
+	pageHeaderHtmlTemplate: '<div class="feature_detail shadow col-12"><br /><button type="button" class="close close_feature" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="row"><div class="col-xs-12 col-sm-8 col-lg-6" style="margin: auto"><br />',
+
+	headerTitleHmtlTemplate: '<article><h2><%= feature_name %></h2><br />',
+
+	headerImageHtmlTemplate: '<img src="<%= banner %>" alt="Photo of <%= feature_name %>" class="feature_banner img-fluid" /><p class="small"><em><%= banner_copyright %></em></p>',
 
 	documentHtmlTemplate: '<%= document_body %><hr /><br />',
 
@@ -77,7 +81,7 @@ MmtMap.clickInteractions = {
 	        }
 	    };
 
-	    let url = '/api/1.0/features/' + sourceLayer + '/' + id + '/attachments/';
+	    const url = '/api/1.0/features/' + sourceLayer + '/' + id + '/attachments/';
 		
 		// Then get the data for the page and display it as an overlay to the map
 	    $.get(url, function(data) {
@@ -88,13 +92,28 @@ MmtMap.clickInteractions = {
 	        
 	        // Once you have the data, compile the HTML fragments
 
-	        var pageHeader = _.template(MmtMap.clickInteractions.pageHeaderHtmlTemplate);
+	        const pageHeader = _.template(MmtMap.clickInteractions.pageHeaderHtmlTemplate);
+			const pageTitle = _.template(MmtMap.clickInteractions.headerTitleHmtlTemplate);
 
-	        page = pageHeader({
-	            banner: data.properties.banner_image,
-	            feature_name: data.properties.name,
-	            banner_copyright: data.properties.banner_image_copyright
-	        });
+	        let page = pageHeader();
+
+			if (data.properties.banner_image) {
+				
+				const headerImgTemplate = _.template(MmtMap.clickInteractions.headerImageHtmlTemplate);
+				const headerImg = headerImgTemplate({
+					banner: data.properties.banner_image,
+					banner_copyright: data.properties.banner_image_copyright,
+					feature_name: data.properties.name
+				})
+
+				page = page + headerImg;
+			}
+
+			let title = pageTitle({
+				feature_name: data.properties.name
+			});
+
+			page = page + title;
 
 	        if (data.properties.popup_audio_file != null) {
 	            var popupAudio = _.template(MmtMap.clickInteractions.audioFileHtmlTemplate);
@@ -115,7 +134,7 @@ MmtMap.clickInteractions = {
 	                case 'document':
 	                    var doc = _.template(MmtMap.clickInteractions.documentHtmlTemplate);
 	                    doc = doc({
-	                        document_body: attachment.body_processed
+	                        document_body: attachment.body
 	                    });
 	                    page = page + doc;
 	                    break;
@@ -221,8 +240,6 @@ MmtMap.clickInteractions = {
 
 	clickFeature: function(source, sourceLayer, feature, id, coords) {
 		// Loads the feature from the server and adds a large click popup with an audio player (if there is an audio file related to it)
-
-
 
 		$.get('api/1.0/features/' + sourceLayer + '/' + id, function(data) {
 	        // Construct the HTML for the popup and add it to the map

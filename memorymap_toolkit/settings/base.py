@@ -149,6 +149,7 @@ MEDIA_URL = '/media/'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ### App-Specific Settings ###
 
@@ -168,7 +169,7 @@ CKEDITOR_CONFIGS = {
             ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'],
             ['RemoveFormat', 'Source']
         ]
-    },
+    }
 }
 
 # Easy Thumbnails

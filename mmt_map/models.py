@@ -191,13 +191,16 @@ class Document(AbstractAttachment):
 	def save(self, *args, **kwargs):
 		"""Sanitize html input from users and add footnotes"""
 		# Clean the html
-		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
-		# Convert HTML to Markdown so you can run the footnote filter on it, then save as self.body_processed, which is what gets displayed on the site
-		h = html2text.HTML2Text()
-		h.ignore_images = False
-		h.unicode_snob = True
-		body_markdown = h.handle(self.body)
-		self.body_processed = markdown.markdown(body_markdown, extensions=['markdown.extensions.footnotes'])
+		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe', 'u'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
+		
+		## Todo: Footnotes filter -- disabled to enable bold and italics and underlines. Needs to be re-written and reactivated.
+		
+		# Convert HTML to Markdown so you can run the footnote filter on it, then save as self.body_processed, which is what gets displayed on the site.
+		#h = html2text.HTML2Text()
+		#h.ignore_images = False
+		#h.unicode_snob = True
+		# body_markdown = h.handle(self.body)
+		# self.body_processed = markdown.markdown(body_markdown, extensions=['markdown.extensions.footnotes'])
 		super(Document, self).save(*args, **kwargs)
 
 

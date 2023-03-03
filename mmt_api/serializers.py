@@ -44,7 +44,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)
 	class Meta:
 		model = Document
-		fields = ('attachment_type', 'title', 'body_processed', 'order', 'slug')
+		fields = ('attachment_type', 'title', 'body_processed', 'order', 'slug', 'body')
 
 class ImageSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)

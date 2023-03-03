@@ -160,6 +160,28 @@ map.on('load', function() {
         },
         'filter': ['!=', ['get', 'name'], name]
     });
+
+    map.addLayer({
+        'id': 'lines',
+        'source': 'interactive',
+        'source-layer': 'lines',
+        'type': 'line',
+        'paint': {
+            'line-color': '#c1c1c1',
+            'line-width': ["interpolate", ["linear"], ["zoom"], 
+                14, 1, 
+                19, 4
+            ],
+            'line-opacity': ["interpolate", ["linear"], ["zoom"], 
+                14, 0.3, 
+                19, 1
+            ]
+        },
+        'layout': {
+            'line-cap': 'round'
+        },
+        'filter': ['!=', ['get', 'name'], name]
+    });
     
 });
 

@@ -10,6 +10,8 @@ $('.theme').click(function(e) {
         map.setFilter('points', ['==', ['get', 'theme_id'], key]);
         map.setFilter('points_labels', ['==', ['get', 'theme_id'], key]);
         map.setFilter('polygon_labels', ['==', ['get', 'theme_id'], key]);
+        map.setFilter('lines', ['==', ['get', 'theme_id'], key]);
+        map.setFilter('line_labels', ['==', ['get', 'theme_id'], key]);
 
         $('.theme').each(function() {
             var color = $(this).data('color');
@@ -27,6 +29,8 @@ $('.theme').click(function(e) {
         map.setFilter('points');
         map.setFilter('points_labels');
         map.setFilter('polygon_labels');
+        map.setFilter('lines');
+        map.setFilter('line_labels');
         $('.theme').each(function() {
             let color = $(this).data('color');
             $(this).css('background-color', 'transparent');
@@ -46,11 +50,15 @@ $('.tag').click(function(e) {
         map.setFilter('points', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('points_labels', tag, ['in', ['get', 'tag_str']]);
         map.setFilter('polygon_labels', ['in', tag, ['get', 'tag_str']]);
+        map.setFilter('line_labels', ['in', tag, ['get', 'tag_str']]);
+        map.setFilter('lines', ['in', tag, ['get', 'tag_str']]);
     } else {
         map.setFilter('polygons');
         map.setFilter('polygon_outlines');
         map.setFilter('points');
         map.setFilter('points_labels');
         map.setFilter('polygon_labels');
+        map.setFilter('lines');
+        map.setFilter('line_labels');
     }
 })
