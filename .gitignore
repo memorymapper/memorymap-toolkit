@@ -92,3 +92,8 @@ static/
 media/
 
 secret_settings.py
+
+
+### Docker ###
+.env.prod
+.env.prod.db

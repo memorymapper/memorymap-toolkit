@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    #command: gunicorn --bind 0.0.0.0:8000 memorymap_toolkit.wsgi:application
+    command: python manage.py runserver 0:8000 --settings=memorymap_toolkit.settings.local
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    env_file:
+      - ./.env.dev
+  db:
+    image: postgis/postgis:15-3.3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=memorymapper
+      - POSTGRES_PASSWORD=2jQSfTYU
+      - POSTGRES_DB=memorymap
+
+volumes:
+  postgres_data:

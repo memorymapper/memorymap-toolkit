@@ -23,6 +23,7 @@ django-taggit==1.3.0
 djangorestframework==3.11.2
 djangorestframework-gis==0.15
 easy-thumbnails==2.8.5
+gunicorn==20.1.0
 html2text==2020.1.16
 idna==2.9
 itypes==1.2.0

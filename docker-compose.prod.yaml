@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: gunicorn memorymap_toolkit.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    env_file:
+      - ./.env.prod
+  db:
+    image: postgis/postgis:15-3.3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+
+volumes:
+  postgres_data:

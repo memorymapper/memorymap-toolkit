@@ -1,0 +1,85 @@
+###########
+# BUILDER #
+###########
+
+# Use an official Python runtime as the base image
+FROM python:3.10.2-alpine as builder
+
+# Set work directory
+WORKDIR /usr/src/app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y \
+        binutils \
+        gcc \
+        gdal-bin \
+        libproj-dev \
+        libpq-dev \
+        musl-dev \
+        memcached \
+        netcat \
+        python3-dev
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip wheel --nocache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+#########
+# FINAL #
+#########
+
+# Pull official base image
+FROM python:3.10.2-alpine
+
+# Create directory for the app user
+RUN mkdir -p /home/app
+
+# Create the app user
+RUN addgroup -S app && adduser -S app -G app
+
+# Create the appropriate directories
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y \
+        gdal-bin \
+        libproj-dev \
+        libpq-dev \
+        memcached \
+        netcat \
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt
+RUN pip install --no-cache /wheels/*
+
+# Copy entrypoint.prod.sh
+COPY ./entrypoint.prod.sh .
+RUN chmod +x entrypoint.sh
+
+# Copy the Django project code into the container
+COPY . /code/
+
+# Make the logs, media and static directories
+RUN mkdir /code/logs/ &&\
+    mkdir /code/media/ &&\
+    mkdir /code/static/
+
+# Expose the port that Django will run on (default is 8000)
+EXPOSE 8000
+
+# run entrypoint.sh
+ENTRYPOINT ["/code/entrypoint.prod.sh"]
+

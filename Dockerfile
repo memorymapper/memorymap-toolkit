@@ -1,41 +1,54 @@
-#########
-# BUILD #
-#########
-FROM debian:buster-slim as build
-ENV	PYTHONDONTWRITEBYTECODE 1 
-ENV	PYTHONUNBUFFERED 1 
-ENV MEMORYMAPPER_VERSION="master" \
-  PACKAGES="python3-pip python3-venv postgresql postgresql-contrib postgis python3-dev libpq-dev" \
-  DEBIAN_FRONTEND="noninteractive"
+# Use an official Python runtime as the base image
+FROM python:3.10.2
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install system dependencies
 RUN apt-get update \
-  && apt-get install -y $PACKAGES \
-  && mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY . .
-RUN pip3 install --upgrade pip  \
-  && pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
-  && pip3 wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels install gunicorn \
-  && mkdir ./logs
-#########
-# Final #
-#########
-FROM debian:buster-slim 
-ENV HOME=/home/django-data \
-  DEBIAN_FRONTEND="noninteractive"
-RUN groupadd -r --gid 295 django-data \ 
-  && adduser --home $HOME --disabled-password --uid 295 --gid 295 --gecos "" django-data 
-WORKDIR $HOME
-COPY --from=build /usr/src/app .
-COPY docker_settings.py  memorymap_toolkit/settings/secret_settings.py
-RUN apt-get -y update \
-    && apt-get -y upgrade \
-    && apt-get install --no-install-recommends -y python3-pip libpq5 python3-gdal \
-    && apt-get clean autoclean \
-    && apt-get autoremove --yes \
-    && rm -rf /var/lib/{apt,dpkg,cache,log}/ \
-    && pip3 install --no-cache $HOME/wheels/* \
-    && rm -rf wheels \
-    && sed -i 's/^DEBUG = True$/DEBUG = False/' memorymap_toolkit/settings/local.py \
-    && chown -R django-data:django-data $HOME
-USER 295
-CMD /usr/bin/python3 manage.py collectstatic --noinput --settings=memorymap_toolkit.settings.local ; /usr/local/bin/gunicorn  --workers=3 --threads=4 --worker-class=gthread --log-file=- --env DJANGO_SETTINGS_MODULE='memorymap_toolkit.settings.local' -b unix:/run/gunicorn/gunicorn.sock memorymap_toolkit.wsgi
+    && apt-get install -y \
+        binutils \
+        gcc \
+        gdal-bin \
+        libproj-dev \
+        libpq-dev \
+        musl-dev \
+        memcached \
+        netcat \
+        python3-dev
+
+# Set the working directory in the container
+WORKDIR /code
+
+# Copy the requirements file into the container
+COPY requirements.txt /code/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy entrypoint.sh
+COPY ./entrypoint.sh /code/
+RUN chmod +x entrypoint.sh
+
+# Copy the Django project code into the container
+COPY . /code/
+
+# Make the logs, media and static directories
+RUN mkdir /code/logs/ &&\
+    mkdir /code/media/ &&\
+    mkdir /code/static/
+
+# Expose the port that Django will run on (default is 8000)
+EXPOSE 8000
+
+# run entrypoint.sh
+ENTRYPOINT ["/code/entrypoint.sh"]
+
+# Run Django migrations and collect static files
+#RUN python manage.py makemigrations --no-input --settings=memorymap_tookit.#settings.local
+#RUN python manage.py migrate --no-input --settings=memorymap_tookit.settings.#local
+#RUN python manage.py collectstatic --no-input --settings=memorymap_tookit.#settings.local
+
+# Set the default command for the container
+#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "memorymap_toolkit.wsgi:application"]
