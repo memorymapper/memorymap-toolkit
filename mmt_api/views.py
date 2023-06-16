@@ -333,7 +333,7 @@ def pages(request):
 	Returns a JSON representation of all of the pages on the site
 	"""
 
-	pages = Page.objects.all()
+	pages = Page.objects.all().order_by('order')
 	serializer = PageLinkSerializer(pages, many=True)
 
 	return Response(serializer.data)
