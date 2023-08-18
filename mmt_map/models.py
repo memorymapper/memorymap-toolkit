@@ -19,6 +19,7 @@ import bleach
 import markdown
 import html2text
 import re
+import uuid
 
 
 def feature_directory_path(instance, filename):
@@ -52,6 +53,7 @@ class TagList(models.Model):
 class AbstractFeature(models.Model):
 	"""The model class from which all feature objects derive"""
 	name = models.CharField(max_length=140)
+	uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 	description = models.CharField(max_length=300, blank=True)
 	theme = models.ForeignKey(Theme, blank=True, null=True, on_delete=models.SET_NULL)
 	banner_image = models.ImageField(upload_to=feature_directory_path, null=True, blank=True, verbose_name='Banner Image')

@@ -90,5 +90,6 @@ db.sqlite3
 
 static/
 media/
+notebooks/
 
 secret_settings.py

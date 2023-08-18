@@ -2,20 +2,23 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import JsonResponse
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework import status
+from rest_framework import status, filters
+from constance import config
+from rest_framework.generics import ListAPIView
 
 # Other Python modules
 import json 
 
 # Memory Map Toolkit
-from mmt_map.models import Point, Line, Polygon, Theme, Document, Image, AudioFile
+from mmt_map.models import AbstractFeature, Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList
 from mmt_pages.models import Page
-from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer
+from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer
 
 
 # Memorymapper exposes a read-only API allowing access to the data in a given Memory Map. 
@@ -67,6 +70,70 @@ def feature_detail(request, pk, source_layer):
 
 	return Response(serializer.data)
 
+
+@api_view()
+def feature_detail_by_uuid(request, uuid):
+	"""
+	Returns a JSON representation of a single feature and all of its attachements
+	"""
+	feature = None
+	serializer = None
+
+	try:
+		feature = Point.objects.get(uuid=uuid)
+		serializer = PointDetailSerializer(feature)
+	except Point.DoesNotExist:
+		pass
+	
+	try:
+		feature = Polygon.objects.get(uuid=uuid)
+		serializer = PolygonDetailSerializer(feature)
+	except:
+		pass
+
+	try:
+		feature = Line.objects.get(uuid=uuid)
+		serializer = LineDetailSerializer(feature)
+	except:
+		pass
+
+	if not feature:
+		return Response('Feature not found', status=status.HTTP_404_NOT_FOUND)
+	
+	return Response(serializer.data)
+
+
+@api_view()
+def feature_by_uuid(request, uuid):
+	"""
+	Returns a JSON representation of a single feature and all of its attachements
+	"""
+	feature = None
+	serializer = None
+
+	try:
+		feature = Point.objects.get(uuid=uuid)
+		serializer = PointSerializer(feature)
+	except Point.DoesNotExist:
+		pass
+	
+	try:
+		feature = Polygon.objects.get(uuid=uuid)
+		serializer = PolygonSerializer(feature)
+	except:
+		pass
+
+	try:
+		feature = Line.objects.get(uuid=uuid)
+		serializer = LineSerializer(feature)
+	except:
+		pass
+
+	if not feature:
+		return Response('Feature not found', status=status.HTTP_404_NOT_FOUND)
+	
+	return Response(serializer.data)
+		
 
 @api_view()
 def feature_list(request):
@@ -135,7 +202,7 @@ def search_features(request):
 	features = points_data['features'] + lines_data['features'] + polygons_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
-	paginator = Paginator(sorted_features, 20)
+	paginator = Paginator(sorted_features, 5)
 
 	try:
 		page = request.GET['page']
@@ -306,6 +373,101 @@ def feature_attachments(request, pk, source_layer):
 
 
 @api_view()
+def feature_attachments_by_uuid(request, uuid):
+	"""
+	Returns a JSON representation of a single feature and all of its attachements
+	"""
+	feature = None
+	serializer = None
+
+	try:
+		feature = Point.objects.get(uuid=uuid)
+		documents = Document.objects.filter(point=feature, published=True)
+		images = Image.objects.filter(point=feature, published=True)
+		audio = AudioFile.objects.filter(point=feature, published=True)
+		feature_serializer = PointSerializer(feature)
+	except Point.DoesNotExist:
+		pass
+	
+	try:
+		feature = Polygon.objects.get(uuid=uuid)
+		documents = Document.objects.filter(polygon=feature, published=True)
+		images = Image.objects.filter(polygon=feature, published=True)
+		audio = AudioFile.objects.filter(polygon=feature, published=True)
+		feature_serializer = PolygonSerializer(feature)
+	except:
+		pass
+
+	try:
+		feature = Line.objects.get(uuid=uuid)
+		documents = Document.objects.filter(line=feature, published=True)
+		images = Image.objects.filter(line=feature, published=True)
+		audio = AudioFile.objects.filter(line=feature, published=True)
+		feature_serializer = LineSerializer(feature)
+	except:
+		pass
+
+	if not feature:
+		return Response('Feature not found', status=status.HTTP_404_NOT_FOUND)
+
+	attachments_base = {'documents': documents, 'images': images, 'audio': audio}
+
+	attachments = []
+	for key, value in attachments_base.items():
+		for v in value:
+			attachments.append(v)
+
+	attachments = sorted(attachments, key=lambda attachment: attachment.order)
+
+	attachments_json = []
+
+	for a in attachments:
+		if a.__class__.__name__.lower() == 'document':
+			serializer = DocumentSerializer(a)
+		elif a.__class__.__name__.lower() == 'image':
+			serializer = ImageSerializer(a)
+		elif a.__class__.__name__.lower() == 'audiofile':
+			serializer = AudioFileSerializer(a)
+
+		attachments_json.append(serializer.data)
+
+	feature = feature_serializer.data
+
+	feature['attachments'] = attachments_json
+	
+	return Response(feature)
+
+@api_view()
+def feature_document_by_uuid(request, uuid, slug):
+	feature = None
+	
+
+	try:
+		feature = Point.objects.get(uuid=uuid)
+		document = Document.objects.get(point=feature, slug=slug)
+	except Point.DoesNotExist:
+		pass
+	
+	try:
+		feature = Polygon.objects.get(uuid=uuid)
+		document = Document.objects.get(polygon=feature, slug=slug)
+	except:
+		pass
+
+	try:
+		feature = Line.objects.get(uuid=uuid)
+		document = Document.objects.get(line=feature, slug=slug)
+	except:
+		pass
+
+	if not feature:
+		return Response('Feature not found', status=status.HTTP_404_NOT_FOUND)
+
+	serializer = DocumentSerializer(document)
+
+	return Response(serializer.data)
+
+@api_view()
 def document(request, pk):
 	"""
 	Returns a JSON representation of a single document
@@ -314,6 +476,13 @@ def document(request, pk):
 	serializer = DocumentSerializer(document)
 
 	return Response(serializer.data)
+
+
+class DocumentList(ListAPIView):
+	queryset = Document.objects.all()
+	serializer_class = DocumentSerializer
+	filter_backends = [filters.SearchFilter]
+	search_fields = ['@body', '@title', '@point__name', '@polygon__name', '@line__name']
 
 
 @api_view()
@@ -335,5 +504,79 @@ def pages(request):
 
 	pages = Page.objects.all()
 	serializer = PageLinkSerializer(pages, many=True)
+
+	return Response(serializer.data)
+
+
+@api_view()
+def site_config(request):
+	"""
+	Returns a JSON representation of the constance settings object and the URL of the styleJson object for the vector tiles. And the themes and the tags.
+	TODO: take the themes and tags out and put them in separate API calls
+	"""
+
+	scheme = request.scheme
+	host = request.get_host()
+
+	tile_json_url = scheme + '://' + host + '/tiles/interactive.json'
+
+	config_dict = {
+		'SITE_TITLE': config.SITE_TITLE,
+		'SITE_SUBTITLE': config.SITE_SUBTITLE,
+		'LOGO_IMAGE': config.LOGO_IMAGE,
+		'MAP_CENTER_LATITUDE': config.MAP_CENTER_LATITUDE,
+		'MAP_CENTER_LONGITUDE': config.MAP_CENTER_LONGITUDE,
+		'BOUNDS_SW_LATITUDE': config.BOUNDS_SW_LATITUDE,
+		'BOUNDS_SW_LONGITUDE': config.BOUNDS_SW_LONGITUDE,
+		'BOUNDS_NE_LATITUDE': config.BOUNDS_NE_LATITUDE,
+		'BOUNDS_NE_LONGITUDE': config.BOUNDS_NE_LONGITUDE,
+		'ZOOM': config.ZOOM,
+		'MIN_ZOOM': config.MIN_ZOOM,
+		'MAX_ZOOM': config.MAX_ZOOM,
+		'BASE_MAP_STYLE_URL': config.BASE_MAP_STYLE_URL,
+		'BASE_MAP_STYLE_FILE': config.BASE_MAP_STYLE_FILE,
+		'MAPTILER_KEY': config.MAPTILER_KEY,
+		'MAPBOX_KEY': config.MAPBOX_KEY,
+		'SCALE': config.SCALE,
+		'PITCH': config.PITCH,
+		'BEARING': config.BEARING,
+		'WELCOME_MESSAGE': config.WELCOME_MESSAGE,
+		'TILE_JSON_URL': tile_json_url,
+		'themes': {},
+		'tagLists': {}
+	}
+
+	themes = Theme.objects.all()
+	serializer = ThemeSerializer(themes, many=True)
+
+	for theme in serializer.data:
+		config_dict['themes'][theme['id']] = {
+			'color': theme['color'],
+			'name': theme['name'],
+			'active': True
+		}
+
+	taglists = TagList.objects.filter(published=True). order_by('order')
+	serializer = TagListSerializer(taglists, many=True)
+	
+	for tl in serializer.data:
+		config_dict['tagLists'][tl['id']] = {
+			'name': tl['name'],
+			'tags': {}
+		}
+		for tag in tl['tags']:
+			config_dict['tagLists'][tl['id']]['tags'][tag['id']] = {'name': tag['name'], 'slug': tag['slug'], 'active': True}
+		
+
+
+	return JsonResponse(config_dict)
+
+@api_view()
+def theme_list(request):
+	"""
+	Returns a list of themes
+	"""
+	themes = Theme.objects.all()
+	serializer = ThemeSerializer(themes, many=True)
 
 	return Response(serializer.data)

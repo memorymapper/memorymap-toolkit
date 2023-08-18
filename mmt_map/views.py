@@ -80,9 +80,13 @@ def vector_tile(request, z, x, y, tile_format):
 		),
 		"mvtgeom" AS (
 			SELECT ST_AsMVTGeom(ST_Transform("t"."geom", 3857), "bounds"."b2d") AS "geom", 
-				   "id", "name", "weight", "theme_id", "tag_str", "thumbnail_url"
-			FROM  {table} "t", "bounds"
-			WHERE ST_Intersects("t"."geom", ST_Transform("bounds"."geom", 4326)) AND "published" = TRUE
+				   "t"."id", "name", "weight", "theme_id", "tag_str", "thumbnail_url", "uuid",
+				   "mmt_map_document"."slug"
+			FROM  {table} "t" 
+				RIGHT JOIN mmt_map_document
+					ON mmt_map_document.point_id = "t".id,
+			"bounds"
+			WHERE ST_Intersects("t"."geom", ST_Transform("bounds"."geom", 4326)) AND "t"."published" = TRUE
 		) 
 		SELECT ST_AsMVT("mvtgeom".*, {layerName}) FROM "mvtgeom"
 	"""

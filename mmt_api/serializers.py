@@ -3,11 +3,12 @@
 # Third party Django apps
 from rest_framework import routers, serializers, viewsets
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField, GeometryField
+from taggit.models import Tag
 
 # Other Python modules
 
 # Memory Map Toolkit
-from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme
+from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList
 from mmt_pages.models import Page
 
 
@@ -44,7 +45,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)
 	class Meta:
 		model = Document
-		fields = ('attachment_type', 'title', 'body_processed', 'order', 'slug', 'body')
+		fields = ('attachment_type', 'title', 'body_processed', 'order', 'slug', 'body', 'point', 'polygon', 'line')
 
 class ImageSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)
@@ -68,7 +69,7 @@ class PointDetailSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Point
-		fields = ('name', 'point_documents', 'point_images', 'point_audiofiles', 'thumbnail_copyright',)
+		fields = ('name', 'point_documents', 'point_images', 'point_audiofiles')
 
 class PolygonDetailSerializer(serializers.ModelSerializer):
 	polygon_documents = DocumentSerializer(many=True, read_only=True)
@@ -77,7 +78,7 @@ class PolygonDetailSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Polygon
-		fields = ('name', 'polygon_documents', 'polygon_images', 'polygon_audiofiles', 'thumbnail_copyright',)
+		fields = ('name', 'polygon_documents', 'polygon_images', 'polygon_audiofiles')
 
 class LineDetailSerializer(serializers.ModelSerializer):
 	line_documents = DocumentSerializer(many=True, read_only=True)
@@ -86,7 +87,7 @@ class LineDetailSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Line
-		fields = ('name', 'line_documents', 'line_images', 'line_audiofiles', 'thumbnail_copyright',)
+		fields = ('name', 'line_documents', 'line_images', 'line_audiofiles')
 
 
 # Other serializers
@@ -101,3 +102,20 @@ class PageLinkSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Page
 		fields = ('title', 'slug', 'order',)
+
+class ThemeSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Theme
+		fields = ('id', 'name', 'color')
+
+class TagSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Tag
+		fields = ('id', 'name', 'slug')
+
+class TagListSerializer(serializers.ModelSerializer):
+	tags = TagSerializer(many=True, read_only=True)
+
+	class Meta:
+		model = TagList
+		fields = ('id', 'name', 'tags',)
