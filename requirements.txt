@@ -44,7 +44,7 @@ fqdn==1.5.1
 html2text==2020.1.16
 idna==2.9
 ipykernel==6.23.0
-ipython==8.13.2
+ipython==8.13.0
 ipython-genutils==0.2.0
 isoduration==20.11.0
 itypes==1.2.0
