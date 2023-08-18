@@ -93,3 +93,6 @@ media/
 notebooks/
 
 secret_settings.py
+
+.env.prod
+.env.prod.db

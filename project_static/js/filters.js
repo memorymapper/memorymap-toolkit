@@ -48,7 +48,7 @@ $('.tag').click(function(e) {
         map.setFilter('polygons', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('polygon_outlines', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('points', ['in', tag, ['get', 'tag_str']]);
-        map.setFilter('points_labels', tag, ['in', ['get', 'tag_str']]);
+        map.setFilter('points_labels', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('polygon_labels', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('line_labels', ['in', tag, ['get', 'tag_str']]);
         map.setFilter('lines', ['in', tag, ['get', 'tag_str']]);
