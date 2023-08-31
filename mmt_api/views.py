@@ -641,7 +641,7 @@ def search(request):
 					'name': p.name,
 					'uuid': p.uuid,
 					'category': 'Place',
-					'slug': p.point_documents.all()[0].slug,
+					'slug': p.documents.all()[0].slug,
 					'description': p.description
 				}
 			)
