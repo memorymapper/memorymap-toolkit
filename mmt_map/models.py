@@ -164,9 +164,9 @@ m2m_changed.connect(tags_changed, sender=Polygon.tags.through)
 
 class AbstractAttachment(models.Model):
 	"""The base class from which all attachments derive"""
-	point = models.ForeignKey(Point, related_name='point_%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
-	polygon = models.ForeignKey(Polygon, related_name='polygon_%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
-	line = models.ForeignKey(Line, related_name='line_%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
+	point = models.ForeignKey(Point, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
+	polygon = models.ForeignKey(Polygon, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
+	line = models.ForeignKey(Line, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
 	author = models.ForeignKey(User, related_name='%(app_label)s_%(class)s_author', null=True, on_delete=models.SET_NULL)
 	title = models.CharField(max_length=128)
 	slug = models.SlugField(max_length=128, blank=True)
@@ -183,6 +183,7 @@ class AbstractAttachment(models.Model):
 
 	class Meta:
 		abstract = True
+		ordering = ['order']
 
 
 class Document(AbstractAttachment):

@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
+from django.contrib.postgres.search import SearchVector
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
@@ -18,7 +19,7 @@ import json
 # Memory Map Toolkit
 from mmt_map.models import AbstractFeature, Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList
 from mmt_pages.models import Page
-from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer
+from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer, TersePointSerializer, TersePolygonSerializer, TerseLineSerializer
 
 
 # Memorymapper exposes a read-only API allowing access to the data in a given Memory Map. 
@@ -106,26 +107,45 @@ def feature_detail_by_uuid(request, uuid):
 @api_view()
 def feature_by_uuid(request, uuid):
 	"""
-	Returns a JSON representation of a single feature and all of its attachements
+	Returns a JSON representation of a single feature and all of its attachements,
+	or, alternatively, a compact version of the same
 	"""
+
+	terse = False
+	print(request.GET.get('compact'))
+
+	try:
+		terse = json.loads(request.GET.get('compact'))
+	except Exception as err:
+		terse = False
+
 	feature = None
 	serializer = None
 
 	try:
 		feature = Point.objects.get(uuid=uuid)
-		serializer = PointSerializer(feature)
+		if (terse):
+			serializer = TersePointSerializer(feature)
+		else:
+			serializer = PointSerializer(feature)
 	except Point.DoesNotExist:
 		pass
 	
 	try:
 		feature = Polygon.objects.get(uuid=uuid)
-		serializer = PolygonSerializer(feature)
+		if (terse):
+			serializer = TersePolygonSerializer(feature)
+		else:
+			serializer = PolygonSerializer(feature)
 	except:
 		pass
 
 	try:
 		feature = Line.objects.get(uuid=uuid)
-		serializer = LineSerializer(feature)
+		if (terse):
+			serializer = TerseLineSerializer(feature)
+		else:
+			serializer = LineSerializer(feature)
 	except:
 		pass
 
@@ -509,6 +529,19 @@ def pages(request):
 
 
 @api_view()
+def front_page(request):
+	"""
+	A JSON representation of the front page
+	"""
+	try:
+		page = Page.objects.filter(is_front_page=True)[0]
+		serializer = PageSerializer(page)
+		return Response(serializer.data)
+	except:
+		return Response('Page not found', status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view()
 def site_config(request):
 	"""
 	Returns a JSON representation of the constance settings object and the URL of the styleJson object for the vector tiles. And the themes and the tags.
@@ -580,3 +613,53 @@ def theme_list(request):
 	serializer = ThemeSerializer(themes, many=True)
 
 	return Response(serializer.data)
+
+
+@api_view()
+def search(request):
+	"""
+	Search everything
+	"""
+
+	try:
+		search_string = request.GET['q']
+	except:
+		return Response('No search string', status=status.HTTP_404_NOT_FOUND)
+	
+	try:
+		points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+		lines = Line.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+		polygons = Polygon.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+		documents = Document.objects.annotate(search=SearchVector('body', 'title')).filter(search=search_string)
+
+		results = []
+
+		for p in points:
+			results.append(
+				{
+					'id': p.id,
+					'name': p.name,
+					'uuid': p.uuid,
+					'category': 'Place',
+					'slug': p.point_documents.all()[0].slug,
+					'description': p.description
+				}
+			)
+		
+		for d in documents:
+			results.append(
+				{
+					'id': d.id,
+					'name': d.title,
+					'uuid': d.point.uuid,
+					'category': 'Document',
+					'slug': d.slug,
+					'place': d.point.name
+				}
+			)
+
+
+		return JsonResponse({'results': results})
+	
+	except:
+		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)

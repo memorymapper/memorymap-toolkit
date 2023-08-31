@@ -89,7 +89,7 @@ class PolygonAdmin(admin.GeoModelAdmin):
 		AudioFileInline,
 	]
 
-	list_display = ['name', 'theme', 'weight', 'published']
+	list_display = ['name', 'theme', 'weight', 'published', 'uuid']
 	list_editable = ['theme', 'weight', 'published']
 
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}

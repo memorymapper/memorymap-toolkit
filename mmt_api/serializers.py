@@ -14,6 +14,8 @@ from mmt_pages.models import Page
 
 # Map serializers
 
+# Full map feature seralizers
+
 class AbstractFeatureSerializer(GeoFeatureModelSerializer):
 	feature_type = serializers.CharField(source='get_type', read_only=True)
 	theme = serializers.StringRelatedField()
@@ -25,7 +27,7 @@ class PointSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Point
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str',)
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid')
 
 class PolygonSerializer(AbstractFeatureSerializer):
 	class Meta:
@@ -40,12 +42,41 @@ class LineSerializer(AbstractFeatureSerializer):
 		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str',)
 
 
+# Terse map feature seralizers
+
+class TerseAbstractfeatureSerializer(GeoFeatureModelSerializer):
+	documents = serializers.SlugRelatedField(
+		many=True,
+		read_only=True,
+		slug_field='slug'
+	)
+	theme = serializers.StringRelatedField()
+
+class TersePointSerializer(TerseAbstractfeatureSerializer):
+	class Meta:
+		model = Point
+		geo_field = 'geom'
+		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
+
+class TersePolygonSerializer(TerseAbstractfeatureSerializer):
+	class Meta:
+		model = Point
+		geo_field = 'geom'
+		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
+
+class TerseLineSerializer(TerseAbstractfeatureSerializer):
+	class Meta:
+		model = Point
+		geo_field = 'geom'
+		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
+
 
 class DocumentSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)
+	point = PointSerializer(read_only=True)
 	class Meta:
 		model = Document
-		fields = ('attachment_type', 'title', 'body_processed', 'order', 'slug', 'body', 'point', 'polygon', 'line')
+		fields = ('id', 'attachment_type', 'title', 'body_processed', 'order', 'slug', 'body', 'point', 'polygon', 'line')
 
 class ImageSerializer(serializers.ModelSerializer):
 	attachment_type = serializers.CharField(source='get_type', read_only=True)

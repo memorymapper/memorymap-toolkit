@@ -25,6 +25,8 @@ urlpatterns = [
 	path('2.0/features/attachments/documents/', views.DocumentList.as_view(), name='document_list'),
 	path('2.0/features/<uuid:uuid>/attachments', views.feature_attachments_by_uuid, name='attachments_by_uuid'),
 	path('2.0/features/<uuid:uuid>/attachments/<slug:slug>', views.feature_document_by_uuid, name='documents_by_uuid'),
+	path('2.0/search/', views.search, name='search'),
+	path('2.0/pages/front/', views.front_page, name='front_page'),
 ]
 
 
