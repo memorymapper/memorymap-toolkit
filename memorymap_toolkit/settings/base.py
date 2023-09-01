@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # 3rd Party
     'easy_thumbnails',
     'rest_framework',
+    'rest_framework_gis',
     'filer',
     'mptt',
     'ckeditor',

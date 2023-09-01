@@ -68,6 +68,8 @@ class AbstractFeature(models.Model):
 	# When the feature is saved, the tags attached to it are stored as a string so they can be easily serialised as mapbox vector tiles
 	tag_str = models.CharField(max_length=256, blank=True)
 	published = models.BooleanField(default=False)
+	# MVT and GeoJSON can't have nested values as properties, so the slugs of attachments are concatenated as a comma-separated string for consumption in Mapbox / Mapblibre
+	attachments = models.CharField(max_length=768, blank=True)
 
 
 	def get_type(self):
@@ -114,6 +116,8 @@ class Point(AbstractFeature):
 		if self.popup_image:
 			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
 			self.thumbnail_url = thumbnail_url
+		if self.documents.all().count() > 0:
+			self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Point, self).save(*args, **kwargs)
 
 
@@ -129,6 +133,8 @@ class Polygon(AbstractFeature):
 		if self.popup_image:
 			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
 			self.thumbnail_url = thumbnail_url
+		if self.documents.all().count() > 0:
+			self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Polygon, self).save(*args, **kwargs)
 
 
@@ -143,6 +149,8 @@ class Line(AbstractFeature):
 		if self.popup_image:
 			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
 			self.thumbnail_url = thumbnail_url
+		if self.documents.all().count() > 0:
+			self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Line, self).save(*args, **kwargs)
 
 

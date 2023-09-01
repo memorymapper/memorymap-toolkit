@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
@@ -627,10 +627,17 @@ def search(request):
 		return Response('No search string', status=status.HTTP_404_NOT_FOUND)
 	
 	try:
-		points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+		#points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
 		lines = Line.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
 		polygons = Polygon.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
-		documents = Document.objects.annotate(search=SearchVector('body', 'title')).filter(search=search_string)
+
+		query = SearchQuery(search_string)
+
+		points = Point.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
+		lines = Line.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
+		polygons = Polygon.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
+
+		documents = Document.objects.annotate(search=SearchVector('body', 'title')).filter(search=query)
 
 		results = []
 
@@ -661,5 +668,7 @@ def search(request):
 
 		return JsonResponse({'results': results})
 	
-	except:
+	except Exception as err:
+		print(err)
+
 		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
