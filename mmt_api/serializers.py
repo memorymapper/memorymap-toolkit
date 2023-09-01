@@ -22,12 +22,13 @@ class AbstractFeatureSerializer(GeoFeatureModelSerializer):
 	popup_image = serializers.CharField(source='get_popup_image_url', read_only=True)
 	popup_audio_file = serializers.CharField(source='get_popup_audio_file_url', read_only=True)
 	banner_image = serializers.CharField(source='get_banner_image_url', read_only=True)
+	color = serializers.CharField(source='get_color', read_only=True)
 
 class PointSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Point
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid', 'attachments')
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid', 'attachments', 'color')
 
 class PolygonSerializer(AbstractFeatureSerializer):
 	class Meta:

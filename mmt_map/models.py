@@ -96,6 +96,10 @@ class AbstractFeature(models.Model):
 	def get_absolute_url(self):
 		feature_type = self.get_type()
 		return '/?feature_type=' + feature_type + '&id=' + str(self.id)
+	
+	def get_color(self):
+		if (self.theme):
+			return self.theme.color
 
 	def __str__(self):
 		return self.name
