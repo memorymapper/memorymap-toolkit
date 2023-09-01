@@ -100,6 +100,8 @@ class AbstractFeature(models.Model):
 	def get_color(self):
 		if (self.theme):
 			return self.theme.color
+		else:
+			return '#4a62b1'
 
 	def __str__(self):
 		return self.name
