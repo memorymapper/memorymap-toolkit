@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.contrib.postgres.search import SearchVector, SearchQuery
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
@@ -623,47 +623,58 @@ def search(request):
 
 	try:
 		search_string = request.GET['q']
+		
 	except:
 		return Response('No search string', status=status.HTTP_404_NOT_FOUND)
 	
+	limit = int(request.GET['limit'])
+
 	try:
-		#points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
-		lines = Line.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
-		polygons = Polygon.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+		query = SearchQuery(search_string, search_type='websearch')
+		vector = SearchVector('name__unaccent', 'tag_str')
 
-		query = SearchQuery(search_string)
+		points = Point.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
+		lines = Line.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
+		polygons = Polygon.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
 
-		points = Point.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
-		lines = Line.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
-		polygons = Polygon.objects.annotate(search=SearchVector('name__unaccent', 'tag_str')).filter(search=query)
+		for p in points:
+			print(p.rank)
 
-		documents = Document.objects.annotate(search=SearchVector('body', 'title')).filter(search=query)
+		vector = SearchVector('body', 'title')
+
+		documents = Document.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
 
 		results = []
 
 		for p in points:
-			results.append(
-				{
-					'id': p.id,
-					'name': p.name,
-					'uuid': p.uuid,
-					'category': 'Place',
-					'slug': p.documents.all()[0].slug,
-					'description': p.description
-				}
-			)
+			try:
+				results.append(
+					{
+						'id': p.id,
+						'name': p.name,
+						'uuid': p.uuid,
+						'category': 'Place',
+						'slug': p.documents.all()[0].slug,
+						'description': p.description
+					}
+				)
+			except:
+				continue
 		
 		for d in documents:
-			results.append(
-				{
-					'id': d.id,
-					'name': d.title,
-					'uuid': d.point.uuid,
-					'category': 'Document',
-					'slug': d.slug,
-					'place': d.point.name
-				}
-			)
+			try:
+				results.append(
+					{
+						'id': d.id,
+						'name': d.title,
+						'uuid': d.point.uuid,
+						'category': 'Document',
+						'slug': d.slug,
+						'place': d.point.name
+					}
+				)
+			except:
+				continue
 
 
 		return JsonResponse({'results': results})
