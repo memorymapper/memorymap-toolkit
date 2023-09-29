@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'memorymap_toolkit.custom_middlewares.MediaURLMiddleware',
 ]
 
 ROOT_URLCONF = 'memorymap_toolkit.urls'
@@ -200,6 +201,7 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 CONSTANCE_CONFIG = {
     'SITE_TITLE': ('Memory Mapper', 'The name of your site'),
     'SITE_SUBTITLE': ('A Toolkit for Mapping History and Place', 'The subtitle of your site'),
+    'MEDIA_URL': ('/media/', 'The media URL. Change to the full path (including URL) if you are using the next.js frontend'),
     'LOGO_IMAGE': ('default.png', 'You can upload an image to display in the menu bar here', 'image_field'),
     'MAP_CENTER_LATITUDE': (0.0, 'The latitude of the centre point of the map'),
     'MAP_CENTER_LONGITUDE': (0.0, 'The longitude of the centre point of the map'),
@@ -230,7 +232,7 @@ CONSTANCE_CONFIG = {
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'Site Settings': ('SITE_TITLE', 'SITE_SUBTITLE', 'LOGO_IMAGE', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT', 'HOVER_THUMBNAILS'),
+    'Site Settings': ('SITE_TITLE', 'SITE_SUBTITLE', 'LOGO_IMAGE', 'MEDIA_URL', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT', 'HOVER_THUMBNAILS'),
     'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_SW_LONGITUDE',  'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
     'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
 }

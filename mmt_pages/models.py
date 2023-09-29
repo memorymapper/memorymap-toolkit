@@ -8,6 +8,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 # Other modules
 import bleach
 
+
 class Page(models.Model):
 	"""An HTML page"""
 	title = models.CharField(max_length=140)
@@ -41,3 +42,20 @@ class Page(models.Model):
 		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
 		self.switch_front_page()
 		super(Page, self).save(*args, **kwargs)
+
+
+class Section(models.Model):
+	"""A section of a page"""
+	title = models.CharField(max_length=140)
+	slug = models.SlugField()
+	body = RichTextUploadingField(blank=True, null=True)
+	order = models.PositiveSmallIntegerField(default=0)
+	page = models.ForeignKey(Page, related_name='sections', on_delete=models.CASCADE, null=True)
+
+	def __unicode__(self):
+		return self.title
+	
+	def save(self, *args, **kwargs):
+		# Clean the html
+		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
+		super(Section, self).save(*args, **kwargs)

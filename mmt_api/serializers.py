@@ -9,7 +9,7 @@ from taggit.models import Tag
 
 # Memory Map Toolkit
 from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList
-from mmt_pages.models import Page
+from mmt_pages.models import Page, Section
 
 
 # Map serializers
@@ -124,10 +124,17 @@ class LineDetailSerializer(serializers.ModelSerializer):
 
 # Other serializers
 
+class SectionSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Section
+		fields = ('title', 'slug', 'body', 'order')
+
 class PageSerializer(serializers.ModelSerializer):
+	sections = SectionSerializer(many=True, read_only=True)
+	
 	class Meta:
 		model = Page
-		fields = ('title', 'slug', 'body',)
+		fields = ('title', 'slug', 'body', 'sections',)
 
 
 class PageLinkSerializer(serializers.ModelSerializer):

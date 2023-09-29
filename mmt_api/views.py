@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.conf import settings
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
@@ -112,7 +113,6 @@ def feature_by_uuid(request, uuid):
 	"""
 
 	terse = False
-	print(request.GET.get('compact'))
 
 	try:
 		terse = json.loads(request.GET.get('compact'))
@@ -297,7 +297,6 @@ def get_features_by_tag(request):
 
 	try:
 		tags = request.GET['tags'].split(',')
-		print(tags)
 	except:
 		return Response('No tags', status=status.HTTP_404_NOT_FOUND)
 
@@ -637,9 +636,6 @@ def search(request):
 		lines = Line.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
 		polygons = Polygon.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
 
-		for p in points:
-			print(p.rank)
-
 		vector = SearchVector('body', 'title')
 
 		documents = Document.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
@@ -680,6 +676,5 @@ def search(request):
 		return JsonResponse({'results': results})
 	
 	except Exception as err:
-		print(err)
 
 		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
