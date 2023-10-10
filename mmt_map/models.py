@@ -122,8 +122,8 @@ class Point(AbstractFeature):
 		if self.popup_image:
 			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
 			self.thumbnail_url = thumbnail_url
-		if self.documents.all().count() > 0:
-			self.attachments = ','.join([d.slug for d in self.documents.all()])
+		if self.documents.filter(published=True).count() > 0:
+			self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
 		super(Point, self).save(*args, **kwargs)
 
 

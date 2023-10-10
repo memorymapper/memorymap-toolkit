@@ -43,6 +43,9 @@ class Page(models.Model):
 		self.switch_front_page()
 		super(Page, self).save(*args, **kwargs)
 
+	class Meta:
+		ordering = ['order']
+
 
 class Section(models.Model):
 	"""A section of a page"""
@@ -59,3 +62,6 @@ class Section(models.Model):
 		# Clean the html
 		self.body = bleach.clean(self.body, tags=['p', 'b', 'strong', 'em', 'img', 'a', 'blockquote', 'i', 'li', 'ul', 'ol', 'h2', 'h3', 'h4', 'br', 'hr', 'iframe'], attributes={'img': ['alt', 'src', 'style'], 'a': ['href', 'target'], 'iframe': ['width', 'height', 'src', 'allow', 'frameborder']}, styles=['width', 'height'])
 		super(Section, self).save(*args, **kwargs)
+	
+	class Meta:
+		ordering = ['order']
