@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from django.conf import settings
 
 # 3rd Party
@@ -626,19 +626,27 @@ def search(request):
 	except:
 		return Response('No search string', status=status.HTTP_404_NOT_FOUND)
 	
-	limit = int(request.GET['limit'])
+	try:
+		limit = int(request.GET['limit'])
+	except:
+		limit = 8
 
 	try:
-		query = SearchQuery(search_string, search_type='websearch')
-		vector = SearchVector('name__unaccent', 'tag_str')
+		query = SearchQuery(search_string, search_type='phrase')
+		#vector = SearchVector('name__unaccent', 'tag_str')
 
-		points = Point.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
-		lines = Line.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
-		polygons = Polygon.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
+		#points = Point.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
 
-		vector = SearchVector('body', 'title')
+		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+		
+		lines = Line.objects.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+
+		polygons = Polygon.objects.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+
+		vector = SearchVector('body', weight='A') + SearchVector('title', weight='B') + SearchVector('point__name', weight='C')
 
 		documents = Document.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
+
 
 		results = []
 
@@ -651,7 +659,8 @@ def search(request):
 						'uuid': p.uuid,
 						'category': 'Place',
 						'slug': p.documents.all()[0].slug,
-						'description': p.description
+						'description': p.description,
+						'similarity': p.similarity
 					}
 				)
 			except:
@@ -666,13 +675,14 @@ def search(request):
 						'uuid': d.point.uuid,
 						'category': 'Document',
 						'slug': d.slug,
-						'place': d.point.name
+						'place': d.point.name,
+						'rank': d.rank
 					}
 				)
 			except:
 				continue
-
-
+		
+		# TODO: Create a SearchResultsSerializer, and return the data with that instead so it's browsable in the REST api web interface
 		return JsonResponse({'results': results})
 	
 	except Exception as err:
