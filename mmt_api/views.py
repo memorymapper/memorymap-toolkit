@@ -639,9 +639,9 @@ def search(request):
 
 		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
 		
-		lines = Line.objects.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
 
-		polygons = Polygon.objects.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+		polygons = Polygon.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
 
 		vector = SearchVector('body', weight='A') + SearchVector('title', weight='B') + SearchVector('point__name', weight='C')
 
@@ -686,5 +686,4 @@ def search(request):
 		return JsonResponse({'results': results})
 	
 	except Exception as err:
-		print(err)
 		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
