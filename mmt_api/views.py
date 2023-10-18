@@ -686,5 +686,5 @@ def search(request):
 		return JsonResponse({'results': results})
 	
 	except Exception as err:
-
+		print(err)
 		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
