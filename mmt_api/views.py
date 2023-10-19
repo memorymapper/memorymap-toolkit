@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity, SearchHeadline
 from django.conf import settings
 
 # 3rd Party
@@ -633,20 +633,16 @@ def search(request):
 
 	try:
 		query = SearchQuery(search_string, search_type='phrase')
-		#vector = SearchVector('name__unaccent', 'tag_str')
-
-		#points = Point.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
-
-		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
 		
-		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
+		
+		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
 
-		polygons = Polygon.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.3).order_by('-similarity')[:limit]
+		polygons = Polygon.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
 
-		vector = SearchVector('body', weight='A') + SearchVector('title', weight='B') + SearchVector('point__name', weight='C')
+		vector = SearchVector('body', weight='A')
 
-		documents = Document.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank').exclude(rank=0.0)[:limit]
-
+		documents = Document.objects.annotate(rank=SearchRank(vector, query), headline=SearchHeadline('body', query)).order_by('-rank').exclude(rank=0.0)[:limit]
 
 		results = []
 
@@ -676,7 +672,7 @@ def search(request):
 						'category': 'Document',
 						'slug': d.slug,
 						'place': d.point.name,
-						'rank': d.rank
+						'headline': d.headline
 					}
 				)
 			except:
