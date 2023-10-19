@@ -634,15 +634,15 @@ def search(request):
 	try:
 		query = SearchQuery(search_string, search_type='phrase')
 		
-		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
+		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
 		
-		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
+		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
 
-		polygons = Polygon.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2).order_by('-similarity')[:limit]
+		polygons = Polygon.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
 
 		vector = SearchVector('body', weight='A')
 
-		documents = Document.objects.annotate(rank=SearchRank(vector, query), headline=SearchHeadline('body', query)).order_by('-rank').exclude(rank=0.0)[:limit]
+		documents = Document.objects.annotate(rank=SearchRank(vector, query), headline=SearchHeadline('body', query)).order_by('-rank').exclude(rank=0.0, published=False)[:limit]
 
 		results = []
 
