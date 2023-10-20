@@ -656,7 +656,8 @@ def search(request):
 						'category': 'Place',
 						'slug': p.documents.all()[0].slug,
 						'description': p.description,
-						'similarity': p.similarity
+						'similarity': p.similarity,
+						'coordinates': p.geom.coords
 					}
 				)
 			except:
@@ -672,7 +673,8 @@ def search(request):
 						'category': 'Document',
 						'slug': d.slug,
 						'place': d.point.name,
-						'headline': d.headline
+						'headline': d.headline,
+						'coordinates': d.point.geom.coords
 					}
 				)
 			except:
