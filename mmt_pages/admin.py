@@ -4,16 +4,14 @@ from .models import Page, Section
 
 class SectionInline(admin.StackedInline):
 	model = Section
-	prepopulated_fields = {"slug": ("title",)}
-	fields = ['title', 'slug', 'order', 'body',]
+	fields = ['title', 'order', 'body']
 	extra = 1
 
 class PageAdmin(admin.ModelAdmin):
-	prepopulated_fields = {'slug': ('title',)}
-
 	inlines = [SectionInline]
 
 	class Meta:
 		model = Page
+		fields = ['title', 'order', 'body']
 
 admin.site.register(Page, PageAdmin)

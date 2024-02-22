@@ -20,6 +20,7 @@ urlpatterns = [
 	# V2.0 urls
 	path('2.0/config/', views.site_config, name='site_config'),
 	path('2.0/themes/', views.theme_list, name='theme_list'),
+    path('2.0/features/', views.filterable_feature_list, name='filterable_feature_list'),
 	path('2.0/features/<uuid:uuid>', views.feature_by_uuid, name='feature_by_uuid'),
 	path('2.0/features/<uuid:uuid>/detail', views.feature_detail_by_uuid, name='feature_detail_by_uuid'),
 	path('2.0/features/attachments/documents/', views.DocumentList.as_view(), name='document_list'),
@@ -27,6 +28,7 @@ urlpatterns = [
 	path('2.0/features/<uuid:uuid>/attachments/<slug:slug>', views.feature_document_by_uuid, name='documents_by_uuid'),
 	path('2.0/search/', views.search, name='search'),
 	path('2.0/pages/front/', views.front_page, name='front_page'),
+    path('2.0/pages/instructions/', views.instructions, name='instructions')
 ]
 
 

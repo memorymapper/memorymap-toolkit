@@ -22,8 +22,8 @@ def set_read_only_fields(request, fields):
 
 class DocumentInline(admin.StackedInline):
 	model = Document
-	prepopulated_fields = {"slug": ("title",)}
-	fields = ['title', 'slug', 'order', 'published', 'body',]
+	# prepopulated_fields = {"slug": ("title",)}
+	fields = ['title', 'order', 'published', 'body',]
 	extra = 1
 
 	def get_readonly_fields(self, request, obj=None):
@@ -33,8 +33,8 @@ class DocumentInline(admin.StackedInline):
 
 class ImageInline(admin.StackedInline):
 	model = Image
-	prepopulated_fields = {"slug": ("title",)}
-	fields = ['title', 'slug', 'order', 'published', 'file', 'description', 'copyright',]
+	# prepopulated_fields = {"slug": ("title",)}
+	fields = ['title', 'order', 'published', 'file', 'description', 'copyright',]
 	extra = 1
 
 	def get_readonly_fields(self, request, obj=None):
@@ -44,8 +44,8 @@ class ImageInline(admin.StackedInline):
 
 class AudioFileInline(admin.StackedInline):
 	model = AudioFile
-	prepopulated_fields = {"slug": ("title",)}
-	fields =['title', 'slug', 'order', 'published', 'file',]
+	# prepopulated_fields = {"slug": ("title",)}
+	fields =['title', 'order', 'published', 'file',]
 	extra = 1
 
 	def get_readonly_fields(self, request, obj=None):

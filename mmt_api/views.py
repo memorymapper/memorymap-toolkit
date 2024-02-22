@@ -521,7 +521,7 @@ def pages(request):
 	Returns a JSON representation of all of the pages on the site
 	"""
 
-	pages = Page.objects.all().order_by('order')
+	pages = Page.objects.filter(is_instructions=False).order_by('order')
 	serializer = PageLinkSerializer(pages, many=True)
 
 	return Response(serializer.data)
@@ -534,6 +534,18 @@ def front_page(request):
 	"""
 	try:
 		page = Page.objects.filter(is_front_page=True)[0]
+		serializer = PageSerializer(page)
+		return Response(serializer.data)
+	except:
+		return Response('Page not found', status=status.HTTP_404_NOT_FOUND)
+	
+@api_view()
+def instructions(request):
+	"""
+	A JSON representation of the instructions page
+	"""
+	try:
+		page = Page.objects.filter(is_instructions=True)[0]
 		serializer = PageSerializer(page)
 		return Response(serializer.data)
 	except:
@@ -685,3 +697,71 @@ def search(request):
 	
 	except Exception as err:
 		return Response('Server Error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+	
+
+@api_view()
+def filterable_feature_list(request):
+	"""A feature list, filterable by theme and tag"""
+
+	points = Point.objects.filter(published=True)
+	lines = Line.objects.filter(published=True)
+	polygons = Polygon.objects.filter(published=True)
+
+	if ('themes' in request.GET) and ('tags' in request.GET):
+		if (request.GET['themes'] == '') or (request.GET['tags'] == ''):
+			return Response('No Results', status=status.HTTP_404_NOT_FOUND)
+		themes = request.GET['themes'].split(',')
+		tags = request.GET['tags'].split(',')
+		if (len(themes) and themes[0] != '') and (len(tags) and tags[0] != ''):
+			points = points.filter(theme__in=themes, tags__name__in=tags).distinct()
+			lines = lines.filter(theme__in=themes, tags__name__in=tags).distinct()
+			polygons = polygons.filter(theme__in=themes, tags__name__in=tags).distinct()
+
+
+	
+	elif ('themes' in request.GET) and ('tags' not in request.GET):
+		themes = request.GET['themes'].split(',')
+		if len(themes) and themes[0] != '':
+			points = points.filter(theme__in=themes).distinct()
+			lines = lines.filter(theme__in=themes).distinct()
+			polygons = polygons.filter(theme__in=themes).distinct()
+
+	elif ('tags' in request.GET) and ('themes' not in request.GET):
+		tags = request.GET['tags'].split(',')
+		if len(tags) and tags[0] != '':
+			points = points.filter(tags__name__in=tags).distinct()
+			lines = lines.filter(tags__name__in=tags).distinct()
+			polygons = polygons.filter(tags__name__in=tags).distinct()
+
+
+	points_serializer = PointSerializer(points, many=True)
+	lines_serializer = LineSerializer(lines, many=True)
+	polygons_serializer = PolygonSerializer(polygons, many=True)
+
+	points_data = points_serializer.data
+	lines_data = lines_serializer.data
+	polygons_data = polygons_serializer.data
+
+	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
+
+	ids = [x['id'] for x in features]
+
+	paginator = Paginator(sorted_features, 20)
+
+	try:
+		page = request.GET['page']
+
+	except:
+		page = 1
+
+	if int(page) > paginator.num_pages:
+		page = paginator.num_pages
+
+	features_list = {
+		'page': page,
+		'totalPages': paginator.num_pages,
+		'features': paginator.page(page).object_list
+	}  
+
+	return Response(features_list)

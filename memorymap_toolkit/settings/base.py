@@ -64,7 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'memorymap_toolkit.custom_middlewares.MediaURLMiddleware',
+    # 'memorymap_toolkit.custom_middlewares.MediaURLMiddleware', // Move to frontend environment variable
 ]
 
 ROOT_URLCONF = 'memorymap_toolkit.urls'

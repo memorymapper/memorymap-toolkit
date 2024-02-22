@@ -134,7 +134,7 @@ class PageSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Page
-		fields = ('title', 'slug', 'body', 'sections',)
+		fields = ('title', 'slug', 'body', 'sections', 'banner_image')
 
 
 class PageLinkSerializer(serializers.ModelSerializer):
