@@ -98,5 +98,7 @@ secret_settings.py
 .env.prod
 .env.prod.db
 
+*.env
+
 *.tar
 *.tar.gz

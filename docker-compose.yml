@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./mmt.env
+    environment:
+      - POSTGRES_USER=${DJANGO_DB_USER}
+      - POSTGRES_DB=${DJANGO_DB_NAME}
+      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
+    ports:
+      - 5432:5432
+  memorymaptoolkit:
+    image: memorymaptoolkit
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./mmt.env
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    ports:
+      - 8000:8000
+    environment:
+      - POSTGRES_USER=${DJANGO_DB_USER}
+      - POSTGRES_NAME=${DJANGO_DB_NAME}
+      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - memorymaptoolkit
+    volumes:
+      - static:/usr/share/nginx/html/static
+      - media:/usr/share/nginx/html/media
+volumes:
+  postgres_data:
+  static:
+  media:

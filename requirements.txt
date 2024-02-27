@@ -41,6 +41,7 @@ easy-thumbnails==2.8.5
 executing==1.2.0
 fastjsonschema==2.16.3
 fqdn==1.5.1
+gunicorn==21.2.0
 html2text==2020.1.16
 idna==2.9
 ipykernel==6.23.0

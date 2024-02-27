@@ -1,7 +1,9 @@
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+import os
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+
+ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost')]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -9,10 +11,11 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': 'localhost',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': ''
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', ''),
+        'USER': os.environ.get('DJANGO_DB_USER', ''),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        'PORT': 5432
     }
 }
 
