@@ -30,15 +30,6 @@ services:
       - POSTGRES_NAME=${DJANGO_DB_NAME}
       - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-  nginx:
-    build: ./nginx
-    ports:
-      - 1337:80
-    depends_on:
-      - memorymaptoolkit
-    volumes:
-      - static:/usr/share/nginx/html/static
-      - media:/usr/share/nginx/html/media
 volumes:
   postgres_data:
   static:
