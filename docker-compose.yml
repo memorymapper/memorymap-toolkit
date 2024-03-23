@@ -1,35 +1,46 @@
 version: '3.4'
 
+# For use in development only
+
 services:
   db:
-    image: postgis/postgis:16-3.4
+    image: kartoza/postgis:16-3.4
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./mmt.env
+      - postgres_data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=${DJANGO_DB_USER}
-      - POSTGRES_DB=${DJANGO_DB_NAME}
-      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
-    ports:
+      - POSTGRES_DBNAME=${DJANGO_DB_NAME}
+      - POSTGRES_PASS=${DJANGO_DB_PASSWORD}
+    expose:
       - 5432:5432
+    env_file:
+      - .env
   memorymaptoolkit:
     image: memorymaptoolkit
     build:
       context: .
       dockerfile: ./Dockerfile
-    env_file:
-      - ./mmt.env
     volumes:
       - static:/app/static
       - media:/app/media
+      - .:/app
+    depends_on:
+      - db
+    command: python manage.py runserver 0.0.0.0:8000 --settings=memorymap_toolkit.settings.local
     ports:
       - 8000:8000
+    env_file:
+      - .env
     environment:
-      - POSTGRES_USER=${DJANGO_DB_USER}
-      - POSTGRES_NAME=${DJANGO_DB_NAME}
-      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
+      - DJANGO_DB_USER=${DJANGO_DB_USER}
+      - DJANGO_DB_NAME=${DJANGO_DB_NAME}
+      - DJANGO_DB_PASSWORD=${DJANGO_DB_PASSWORD}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_SECURE_SSL_HOST=${DJANGO_SECURE_SSL_HOST}
+      - DJANGO_SESSION_COOKIE_SECURE=${DJANGO_SESSION_COOKIE_SECURE}
+      - DJANGO_CSRF_COOKIE_SECURE=${DJANGO_CSRF_COOKIE_SECURE}
+      - DJANGO_DB_HOST=${DJANGO_DB_HOST}
 volumes:
   postgres_data:
   static:

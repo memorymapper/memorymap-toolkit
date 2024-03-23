@@ -104,7 +104,7 @@ secret_settings.py
 
 .env.prod
 .env.prod.db
-
+.env
 *.env
 
 *.tar
