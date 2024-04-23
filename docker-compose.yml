@@ -1,6 +1,8 @@
 version: '3.4'
 
-# For use in development only
+# For use in development only. Starts two containers - one for MMT, one for postgres
+# with volumes for the /app directory and the postgres data. /app dir mapped means that
+# changes to the code reloads MMT.
 
 services:
   db:
@@ -11,8 +13,9 @@ services:
       - POSTGRES_USER=${DJANGO_DB_USER}
       - POSTGRES_DBNAME=${DJANGO_DB_NAME}
       - POSTGRES_PASS=${DJANGO_DB_PASSWORD}
-    expose:
-      - 5432:5432
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    ports:
+      - 5433:5432
     env_file:
       - .env
   memorymaptoolkit:

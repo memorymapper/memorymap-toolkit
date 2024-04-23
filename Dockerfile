@@ -9,9 +9,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# Install Postgres and PostGIS
+# Install dependencies
 RUN apt-get update
-RUN apt-get install gcc libgdal32 libpq-dev postgresql-server-dev-all -y
+RUN apt-get install gcc libgdal32 libpq-dev postgresql-server-dev-all netcat-traditional -y
 
 # Install pip requirements
 COPY requirements.txt .
@@ -25,7 +25,7 @@ COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-RUN mkdir media && mkdir static && cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
+RUN mkdir media && mkdir static && mkdir logs && cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
 
 RUN chmod +x entrypoint.sh
 

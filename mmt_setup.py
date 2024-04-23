@@ -1,5 +1,6 @@
 import os
 from mmt_pages.models import Page
+from mmt_map.models import Theme
 from django.contrib.auth.models import User
 
 
@@ -19,8 +20,15 @@ except:
     Page.objects.create(title='Instructions', body=instructions_text, is_instructions=True).save()
 
 
-# Create a superuser, if needs be
+# Create a default theme, if needed
     
+if Theme.objects.all().count() == 0:
+    t = Theme.objects.create(name='Default')
+    t.save()
+
+
+# Create a superuser, if needs be
+
 try:
     User.objects.filter(is_superuser=True)[0]
 except:

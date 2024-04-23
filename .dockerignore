@@ -30,3 +30,5 @@ README.md
 **/static
 **/notebooks
 secret_settings.py
+**/*.tar.gz
+**/logs

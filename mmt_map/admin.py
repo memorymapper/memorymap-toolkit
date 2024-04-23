@@ -2,7 +2,7 @@
 from django.contrib.gis import admin
 
 # Memory Map Toolkit
-from .models import Theme, Point, Polygon, Line, Document, Image, AudioFile, TagList
+from .models import Theme, Point, Polygon, Line, Document, Image, AudioFile, TagList, MapLayer
 from .forms import PointForm, PolygonForm, LineForm
 
 # 3rd Party
@@ -136,9 +136,15 @@ class ThemeAdmin(admin.ModelAdmin):
 		model = Theme
 
 
+class MapLayerAdmin(admin.ModelAdmin):
+
+	class Meta:
+		model = MapLayer
+
 
 admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Point, PointAdmin)
 admin.site.register(Polygon, PolygonAdmin)
 admin.site.register(Line, LineAdmin)
 admin.site.register(TagList)
+admin.site.register(MapLayer, MapLayerAdmin)

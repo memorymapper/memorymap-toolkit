@@ -134,14 +134,14 @@ class Polygon(AbstractFeature):
 	geom = models.MultiPolygonField(verbose_name='Geometry')
 
 	def save(self, *args, **kwargs):
-		super(Polygon, self).save(*args, **kwargs)
-		self.tag_str = ', '.join(self.tags.names())
-		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-		if self.popup_image:
-			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-			self.thumbnail_url = thumbnail_url
-		if self.documents.all().count() > 0:
-			self.attachments = ','.join([d.slug for d in self.documents.all()])
+		if self.id:
+			self.tag_str = ', '.join(self.tags.names())
+			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+			if self.popup_image:
+				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+				self.thumbnail_url = thumbnail_url
+			if self.documents.all().count() > 0:
+				self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Polygon, self).save(*args, **kwargs)
 
 
@@ -242,3 +242,12 @@ class AudioFile(AbstractAttachment):
 		if self.file:
 			return self.file.url
 
+
+class MapLayer(models.Model):
+	"""Additional raster map layers for your map"""
+	name = models.CharField(max_length=64)
+	tilejson_url = models.URLField(max_length=256)
+	slug = AutoSlugField(populate_from='name')
+
+	def __str__(self):
+		return self.name

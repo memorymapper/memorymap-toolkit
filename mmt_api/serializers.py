@@ -8,7 +8,7 @@ from taggit.models import Tag
 # Other Python modules
 
 # Memory Map Toolkit
-from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList
+from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList, MapLayer
 from mmt_pages.models import Page, Section
 
 
@@ -34,13 +34,13 @@ class PolygonSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Polygon
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug','tag_str', 'attachments')
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug','tag_str', 'uuid', 'attachments', 'color')
 
 class LineSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Line
 		geo_field = 'geom'
-		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'attachments')
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid', 'attachments', 'color')
 
 
 # Terse map feature seralizers
@@ -120,6 +120,12 @@ class LineDetailSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Line
 		fields = ('name', 'line_documents', 'line_images', 'line_audiofiles')
+
+
+class MapLayerSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = MapLayer
+		fields = ('name', 'slug', 'tilejson_url')
 
 
 # Other serializers

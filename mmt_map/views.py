@@ -49,7 +49,7 @@ def text_only_feature_list(request):
 	return render(request, 'mmt_map/feature_list.html', {'themes': themes, 'tag_lists': tag_lists})
 
 
-# Vector tiles are optionally cached to stop the database being spammed to heavily.
+# Vector tiles are optionally cached to stop the database being spammed too heavily.
 @cache_page(60 * config.CACHE_TIMEOUT)
 def vector_tile(request, z, x, y, tile_format):
 	"""

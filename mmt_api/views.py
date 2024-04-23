@@ -18,9 +18,9 @@ from rest_framework.generics import ListAPIView
 import json 
 
 # Memory Map Toolkit
-from mmt_map.models import AbstractFeature, Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList
+from mmt_map.models import AbstractFeature, Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList, MapLayer
 from mmt_pages.models import Page
-from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer, TersePointSerializer, TersePolygonSerializer, TerseLineSerializer
+from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer, TersePointSerializer, TersePolygonSerializer, TerseLineSerializer, MapLayerSerializer
 
 
 # Memorymapper exposes a read-only API allowing access to the data in a given Memory Map. 
@@ -587,7 +587,8 @@ def site_config(request):
 		'WELCOME_MESSAGE': config.WELCOME_MESSAGE,
 		'TILE_JSON_URL': tile_json_url,
 		'themes': {},
-		'tagLists': {}
+		'tagLists': {},
+		'mapLayers': []
 	}
 
 	themes = Theme.objects.all()
@@ -611,7 +612,10 @@ def site_config(request):
 		for tag in tl['tags']:
 			config_dict['tagLists'][tl['id']]['tags'][tag['id']] = {'name': tag['name'], 'slug': tag['slug'], 'active': True}
 		
+	map_layers = MapLayer.objects.all()
+	serializer = MapLayerSerializer(map_layers, many=True)
 
+	config_dict['mapLayers'] = serializer.data
 
 	return JsonResponse(config_dict)
 
@@ -659,6 +663,40 @@ def search(request):
 		results = []
 
 		for p in points:
+			try:
+				results.append(
+					{
+						'id': p.id,
+						'name': p.name,
+						'uuid': p.uuid,
+						'category': 'Place',
+						'slug': p.documents.all()[0].slug,
+						'description': p.description,
+						'similarity': p.similarity,
+						'coordinates': p.geom.coords
+					}
+				)
+			except:
+				continue
+		
+		for l in lines:
+			try:
+				results.append(
+					{
+						'id': l.id,
+						'name': l.name,
+						'uuid': l.uuid,
+						'category': 'Place',
+						'slug': l.documents.all()[0].slug,
+						'description': l.description,
+						'similarity': l.similarity,
+						'coordinates': l.geom.coords
+					}
+				)
+			except:
+				continue
+
+		for p in polygons:
 			try:
 				results.append(
 					{
@@ -744,8 +782,6 @@ def filterable_feature_list(request):
 
 	features = points_data['features'] + lines_data['features'] + polygons_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
-
-	ids = [x['id'] for x in features]
 
 	paginator = Paginator(sorted_features, 20)
 
