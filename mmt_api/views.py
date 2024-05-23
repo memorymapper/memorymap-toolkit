@@ -559,7 +559,11 @@ def site_config(request):
 	TODO: take the themes and tags out and put them in separate API calls
 	"""
 
-	scheme = request.scheme
+	if request.is_secure():
+		scheme = 'https'
+	else:
+		scheme = request.scheme
+	
 	host = request.get_host()
 
 	tile_json_url = scheme + '://' + host + '/tiles/interactive.json'
@@ -585,6 +589,7 @@ def site_config(request):
 		'PITCH': config.PITCH,
 		'BEARING': config.BEARING,
 		'WELCOME_MESSAGE': config.WELCOME_MESSAGE,
+		'MAP_LAYER_WIDGET': config.MAP_LAYER_WIDGET,
 		'TILE_JSON_URL': tile_json_url,
 		'themes': {},
 		'tagLists': {},

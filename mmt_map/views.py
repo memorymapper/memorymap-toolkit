@@ -135,8 +135,14 @@ def vector_tile(request, z, x, y, tile_format):
 
 def tile_json(request):
 	"""Returns a tileJSON object describing the vector tiles hosted in the Memory Map toolkit database."""
+
+	if request.is_secure():
+		scheme = 'https'
+	else:
+		scheme = request.scheme
 	
-	scheme = request.scheme
+	print(request.is_secure())
+
 	host = request.get_host()
 
 	json = {

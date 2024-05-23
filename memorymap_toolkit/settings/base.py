@@ -196,7 +196,11 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_ADDITIONAL_FIELDS = {
     'image_field': ['django.forms.ImageField', {}],
-    'file_field': ['django.forms.FileField', {}]
+    'file_field': ['django.forms.FileField', {}],
+    'layer_widget_select': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': (("RADIO", "Radio"), ("CHECKBOX", "Checkbox"), ("SLIDER", "Slider"))
+    }],
 }
 
 CONSTANCE_CONFIG = {
@@ -230,12 +234,13 @@ CONSTANCE_CONFIG = {
     'LAYERS_MENU_TITLE': ('Themes', 'The name of the switchable layers menu.'),
     'SHOW_AUDIO_PLAYER_TITLES': (True, 'Whether or not audio player titles are visible. Useful if your audio has the same title as the map feature that it\'s attached to.'),
     'HOVER_THUMBNAILS': (True, 'Whether image thumbnails are shown on hovering over a map feature'),
+    'MAP_LAYER_WIDGET': ('CHECKBOX', 'Map layer widget type', 'layer_widget_select')
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'Site Settings': ('SITE_TITLE', 'SITE_SUBTITLE', 'LOGO_IMAGE', 'MEDIA_URL', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT', 'HOVER_THUMBNAILS'),
     'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_SW_LONGITUDE',  'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
-    'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE')
+    'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'MAP_LAYER_WIDGET', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE',)
 }
 
 # Django Debug Toolbar
@@ -277,3 +282,9 @@ REST_FRAMEWORK = {
 #]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Forward the https scheme correctly to Django if behind a reverse proxy. In .env set 'HTTP_X_FORWARDED_PROTO' to 'True'
+if os.environ.get('HTTP_X_FORWARDED_PROTO') == 'True': # Environment variables are strings...
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    SECURE_PROXY_SSL_HEADER = None
