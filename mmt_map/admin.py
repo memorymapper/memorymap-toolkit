@@ -2,8 +2,8 @@
 from django.contrib.gis import admin
 
 # Memory Map Toolkit
-from .models import Theme, Point, Polygon, Line, Document, Image, AudioFile, TagList, MapLayer
-from .forms import PointForm, PolygonForm, LineForm
+from .models import Theme, Point, Polygon, Line, Document, Image, AudioFile, TagList, MapLayer, MultiPoint
+from .forms import PointForm, PolygonForm, LineForm, MultiPointForm
 
 # 3rd Party
 
@@ -78,6 +78,28 @@ class PointAdmin(admin.GeoModelAdmin):
 		return set_read_only_fields(request, fields)
 
 
+class MultiPointAdmin(admin.GeoModelAdmin):
+	form = MultiPointForm
+
+	inlines = [
+		DocumentInline,
+		ImageInline,
+		AudioFileInline,
+	]
+
+	list_display = ['name', 'uuid', 'theme', 'weight', 'published']
+	list_editable = ['theme', 'weight', 'published']
+
+	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
+
+	search_fields = ['name']
+
+	class Meta:
+		model = MultiPoint
+
+	def get_readonly_fields(self, request, obj=None):
+		fields = super(MultiPointAdmin, self).get_readonly_fields(request, obj)
+		return set_read_only_fields(request, fields)
 
 
 class PolygonAdmin(admin.GeoModelAdmin):
@@ -144,6 +166,9 @@ class MapLayerAdmin(admin.ModelAdmin):
 
 admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Point, PointAdmin)
+# MultiPoint Admin is disabled for now as it's going to be tricky to add the editing interface
+# to the Django site. To be addressed using the revised editing interface.
+# admin.site.register(MultiPoint, MultiPointAdmin)
 admin.site.register(Polygon, PolygonAdmin)
 admin.site.register(Line, LineAdmin)
 admin.site.register(TagList)

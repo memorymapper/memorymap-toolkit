@@ -591,6 +591,9 @@ def site_config(request):
 		'WELCOME_MESSAGE': config.WELCOME_MESSAGE,
 		'MAP_LAYER_WIDGET': config.MAP_LAYER_WIDGET,
 		'TILE_JSON_URL': tile_json_url,
+		'MAPTILER_STYLE': config.MAPTILER_STYLE,
+		'SHOW_TERRAIN': config.SHOW_TERRAIN,
+		'TERRAIN_EXAGGERATION': config.TERRAIN_EXAGGERATION,
 		'themes': {},
 		'tagLists': {},
 		'mapLayers': []

@@ -201,6 +201,15 @@ CONSTANCE_ADDITIONAL_FIELDS = {
         'widget': 'django.forms.Select',
         'choices': (("RADIO", "Radio"), ("CHECKBOX", "Checkbox"), ("SLIDER", "Slider"))
     }],
+    'maptiler_style_select': ['django.forms.fields.ChoiceField', {
+        'widget': 'django.forms.Select',
+        'choices': (
+            ("https://api.maptiler.com/maps/positron/style.json", "Positron"), 
+            ("https://api.maptiler.com/maps/landscape/style.json", "Landscape"),
+            ("https://api.maptiler.com/maps/streets-v2/style.json", "Streets"),
+            ("https://api.maptiler.com/maps/dataviz/style.json", "Dataviz"),
+        )
+    }]
 }
 
 CONSTANCE_CONFIG = {
@@ -234,13 +243,16 @@ CONSTANCE_CONFIG = {
     'LAYERS_MENU_TITLE': ('Themes', 'The name of the switchable layers menu.'),
     'SHOW_AUDIO_PLAYER_TITLES': (True, 'Whether or not audio player titles are visible. Useful if your audio has the same title as the map feature that it\'s attached to.'),
     'HOVER_THUMBNAILS': (True, 'Whether image thumbnails are shown on hovering over a map feature'),
-    'MAP_LAYER_WIDGET': ('CHECKBOX', 'Map layer widget type', 'layer_widget_select')
+    'MAP_LAYER_WIDGET': ('CHECKBOX', 'Map layer widget type', 'layer_widget_select'),
+    'MAPTILER_STYLE': ("https://api.maptiler.com/maps/positron/style.json", 'Maptiler Style (for revised front end)', 'maptiler_style_select'),
+    'SHOW_TERRAIN': (False, 'Whether to show terrain elevation on the map'),
+    'TERRAIN_EXAGGERATION': (1, 'The degree to which terrain is exaggerated (if shown)')
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'Site Settings': ('SITE_TITLE', 'SITE_SUBTITLE', 'LOGO_IMAGE', 'MEDIA_URL', 'WELCOME_MESSAGE', 'CUSTOM_CSS', 'LAYERS_MENU_TITLE', 'SHOW_AUDIO_PLAYER_TITLES', 'SITE_METADATA', 'CACHE_TIMEOUT', 'HOVER_THUMBNAILS'),
     'Map Settings': ('MAP_CENTER_LATITUDE', 'MAP_CENTER_LONGITUDE', 'BOUNDS_SW_LATITUDE', 'BOUNDS_SW_LONGITUDE',  'BOUNDS_NE_LATITUDE', 'BOUNDS_NE_LONGITUDE', 'ZOOM', 'MIN_ZOOM', 'MAX_ZOOM', 'SCALE', 'PITCH', 'BEARING', 'MAPBOX_VERSION'),
-    'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'MAP_LAYER_WIDGET', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE',)
+    'Map Style': ('BASE_MAP_STYLE_URL', 'MAPTILER_KEY', 'MAPBOX_KEY', 'SWITCHABLE_LAYERS', 'MAP_LAYER_WIDGET', 'FEATURE_LABEL_FONT', 'BASE_MAP_STYLE_FILE', 'MAPTILER_STYLE', 'SHOW_TERRAIN', 'TERRAIN_EXAGGERATION')
 }
 
 # Django Debug Toolbar

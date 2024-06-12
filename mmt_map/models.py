@@ -128,6 +128,23 @@ class Point(AbstractFeature):
 		super(Point, self).save(*args, **kwargs)
 
 
+class MultiPoint(AbstractFeature):
+	"""A multipoint geometry"""
+
+	geom = models.MultiPointField(verbose_name='Points')
+
+	def save(self, *args, **kwargs):
+		# Model has to be saved first to access the tags
+		super(MultiPoint, self).save(*args, **kwargs)
+		self.tag_str = ', '.join(self.tags.names())
+		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+		if self.popup_image:
+			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			self.thumbnail_url = thumbnail_url
+		if self.documents.filter(published=True).count() > 0:
+			self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
+		super(MultiPoint, self).save(*args, **kwargs)
+
 
 class Polygon(AbstractFeature):
 	"""A polygon"""
@@ -180,6 +197,7 @@ m2m_changed.connect(tags_changed, sender=Polygon.tags.through)
 class AbstractAttachment(models.Model):
 	"""The base class from which all attachments derive"""
 	point = models.ForeignKey(Point, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
+	multipoint = models.ForeignKey(MultiPoint, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
 	polygon = models.ForeignKey(Polygon, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
 	line = models.ForeignKey(Line, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
 	author = models.ForeignKey(User, related_name='%(app_label)s_%(class)s_author', null=True, on_delete=models.SET_NULL)
