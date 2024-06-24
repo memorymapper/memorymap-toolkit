@@ -1,6 +1,6 @@
 # Utility function to import GeoJSON data to memory mapper from an external URL
 import requests
-from .models import Point, Polygon, Line, Theme, Document, TagList
+from .models import Point, Polygon, Line, Theme, Document, TagList, MultiPoint
 from django.contrib.gis.geos import GEOSGeometry
 
 def import_geojson(url, title, fallback, theme, props_to_tags):
@@ -51,6 +51,10 @@ def import_geojson(url, title, fallback, theme, props_to_tags):
             feature = Line.objects.create(name=name, theme=t[0], published=True, geom=geom)
             feature.save()
             Document.objects.create(title=name, line=feature, body='<p>{props}</p>'.format(props=props), published=True).save()
+        elif f['geometry']['type'] in ['MultiPoint']:
+            feature = MultiPoint.objects.create(name=name, theme=t[0], published=True, geom=geom)
+            feature.save()
+            Document.objects.create(title=name, multipoint=feature, body='<p>{props}</p>'.format(props=props), published=True).save()
 
         
         # Add the tags to the feature
