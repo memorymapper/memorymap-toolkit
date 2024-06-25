@@ -11,7 +11,16 @@ ENV PYTHONUNBUFFERED=1
 
 # Install dependencies
 RUN apt-get update
-RUN apt-get install gcc libgdal32 libpq-dev postgresql-server-dev-all netcat-traditional -y
+RUN apt-get install \ 
+    gcc \
+    python3-dev \
+    python3-setuptools \
+    libgdal32 \
+    libpq-dev \
+    postgresql-server-dev-all \
+    libjpeg62-turbo-dev \
+    zlib1g-dev \
+    netcat-traditional -y
 
 # Install pip requirements
 COPY requirements.txt .
@@ -25,7 +34,10 @@ COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-RUN mkdir media && mkdir static && mkdir logs && cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
+RUN mkdir static && \
+    mkdir media && \
+    mkdir logs && \
+    cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
 
 RUN chmod +x entrypoint.sh
 

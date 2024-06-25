@@ -168,7 +168,7 @@ admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Point, PointAdmin)
 # MultiPoint Admin is disabled for now as it's going to be tricky to add the editing interface
 # to the Django site. To be addressed using the revised editing interface.
-# admin.site.register(MultiPoint, MultiPointAdmin)
+admin.site.register(MultiPoint, MultiPointAdmin)
 admin.site.register(Polygon, PolygonAdmin)
 admin.site.register(Line, LineAdmin)
 admin.site.register(TagList)

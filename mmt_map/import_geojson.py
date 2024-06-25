@@ -3,7 +3,7 @@ import requests
 from .models import Point, Polygon, Line, Theme, Document, TagList, MultiPoint
 from django.contrib.gis.geos import GEOSGeometry
 
-def import_geojson(url, title, fallback, theme, props_to_tags):
+def import_geojson(url, title, fallback, theme, props_to_tags=None):
     """
     Import geojson feature collection from an external URL. Saves the properties of feature
     to the 'body' field of the associated document.
@@ -11,7 +11,7 @@ def import_geojson(url, title, fallback, theme, props_to_tags):
     Param str title: the geojson property to use for the title of the feature and its associated
     document 
     Param str fallback: a fallback string to use if the title prop is empty
-    Param str theme: the title of the theme to add these features to
+    Param str theme: the column to use to sort these features into themes
     Param dict props_to_tags: a dictionary of tag groups and props for features, in this format:
     {
         'Surname': 'surname',
@@ -31,10 +31,10 @@ def import_geojson(url, title, fallback, theme, props_to_tags):
 
     for f in data['features']:
         props = ''.join(['<li>{k}: {v}</li>'.format(k=key, v=str(value)) for key, value in f['properties'].items() if value])
-        name = f['properties'][title]
+        name = f['properties'][title][0:127] # trim to fit in
         if not name:
             name = fallback
-        t = Theme.objects.get_or_create(name=theme)
+        t = Theme.objects.get_or_create(name=f['properties'][theme])
         geom = GEOSGeometry(str(f['geometry']))
 
         feature = None
@@ -56,6 +56,9 @@ def import_geojson(url, title, fallback, theme, props_to_tags):
             feature.save()
             Document.objects.create(title=name, multipoint=feature, body='<p>{props}</p>'.format(props=props), published=True).save()
 
+
+        if not props_to_tags:
+            return 'Geometry Loaded'
         
         # Add the tags to the feature
         props = list(props_to_tags.values())

@@ -105,6 +105,10 @@ def vector_tile(request, z, x, y, tile_format):
 		'lines': {
 			'table': 'mmt_map_line',
 			'layerName': "lines"
+		},
+		'mulipoints': {
+			'table': 'mmt_map_multipoint',
+			'layerName': "multipoints"
 		}
 	}
 
@@ -140,8 +144,6 @@ def tile_json(request):
 		scheme = 'https'
 	else:
 		scheme = request.scheme
-	
-	print(request.is_secure())
 
 	host = request.get_host()
 

@@ -18,9 +18,9 @@ from rest_framework.generics import ListAPIView
 import json 
 
 # Memory Map Toolkit
-from mmt_map.models import AbstractFeature, Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList, MapLayer
+from mmt_map.models import Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList, MapLayer, MultiPoint
 from mmt_pages.models import Page
-from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer, TersePointSerializer, TersePolygonSerializer, TerseLineSerializer, MapLayerSerializer
+from .serializers import PointSerializer, PolygonSerializer, LineSerializer, PointDetailSerializer, PolygonDetailSerializer, LineDetailSerializer, DocumentSerializer, PageSerializer, AudioFileSerializer, ImageSerializer, PageLinkSerializer, ThemeSerializer, TagListSerializer, TersePointSerializer, TersePolygonSerializer, TerseLineSerializer, MapLayerSerializer, TerseMultiPointSerializer, MultiPointSerializer
 
 
 # Memorymapper exposes a read-only API allowing access to the data in a given Memory Map. 
@@ -146,6 +146,15 @@ def feature_by_uuid(request, uuid):
 			serializer = TerseLineSerializer(feature)
 		else:
 			serializer = LineSerializer(feature)
+	except:
+		pass
+
+	try:
+		feature = MultiPoint.objects.get(uuid=uuid)
+		if (terse):
+			serializer = TerseMultiPointSerializer(feature)
+		else:
+			serializer = MultiPointSerializer(feature)
 	except:
 		pass
 
@@ -407,6 +416,15 @@ def feature_attachments_by_uuid(request, uuid):
 		feature_serializer = PointSerializer(feature)
 	except Point.DoesNotExist:
 		pass
+
+	try:
+		feature = MultiPoint.objects.get(uuid=uuid)
+		documents = Document.objects.filter(multipoint=feature, published=True)
+		images = Image.objects.filter(multipoint=feature, published=True)
+		audio = AudioFile.objects.filter(multipoint=feature, published=True)
+		feature_serializer = PointSerializer(feature)
+	except MultiPoint.DoesNotExist:
+		pass
 	
 	try:
 		feature = Polygon.objects.get(uuid=uuid)
@@ -476,6 +494,12 @@ def feature_document_by_uuid(request, uuid, slug):
 	try:
 		feature = Line.objects.get(uuid=uuid)
 		document = Document.objects.get(line=feature, slug=slug)
+	except:
+		pass
+	
+	try:
+		feature = MultiPoint.objects.get(uuid=uuid)
+		document = Document.objects.get(multipoint=feature, slug=slug)
 	except:
 		pass
 

@@ -8,7 +8,7 @@ from taggit.models import Tag
 # Other Python modules
 
 # Memory Map Toolkit
-from mmt_map.models import AbstractFeature, Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList, MapLayer
+from mmt_map.models import Point, Line, Polygon, Document, Image, AudioFile, Theme, TagList, MapLayer, MultiPoint
 from mmt_pages.models import Page, Section
 
 
@@ -27,6 +27,12 @@ class AbstractFeatureSerializer(GeoFeatureModelSerializer):
 class PointSerializer(AbstractFeatureSerializer):
 	class Meta:
 		model = Point
+		geo_field = 'geom'
+		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid', 'attachments', 'color')
+
+class MultiPointSerializer(AbstractFeatureSerializer):
+	class Meta:
+		model = MultiPoint
 		geo_field = 'geom'
 		fields = ('id', 'feature_type', 'name', 'description', 'theme', 'popup_image', 'banner_image', 'weight', 'popup_audio_file', 'popup_audio_title', 'banner_image_copyright', 'popup_audio_slug', 'tag_str', 'uuid', 'attachments', 'color')
 
@@ -61,13 +67,19 @@ class TersePointSerializer(TerseAbstractfeatureSerializer):
 
 class TersePolygonSerializer(TerseAbstractfeatureSerializer):
 	class Meta:
-		model = Point
+		model = Polygon
 		geo_field = 'geom'
 		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
 
 class TerseLineSerializer(TerseAbstractfeatureSerializer):
 	class Meta:
-		model = Point
+		model = Line
+		geo_field = 'geom'
+		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
+
+class TerseMultiPointSerializer(TerseAbstractfeatureSerializer):
+	class Meta:
+		model = MultiPoint
 		geo_field = 'geom'
 		fields = ('id', 'uuid', 'name', 'theme', 'documents',)
 

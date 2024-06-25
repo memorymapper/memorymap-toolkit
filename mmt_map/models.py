@@ -116,15 +116,14 @@ class Point(AbstractFeature):
 	geom = models.PointField(verbose_name='Coordinates')
 
 	def save(self, *args, **kwargs):
-		# Model has to be saved first to access the tags
-		super(Point, self).save(*args, **kwargs)
-		self.tag_str = ', '.join(self.tags.names())
-		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-		if self.popup_image:
-			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-			self.thumbnail_url = thumbnail_url
-		if self.documents.filter(published=True).count() > 0:
-			self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
+		if self.id:
+			self.tag_str = ', '.join(self.tags.names())
+			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+			if self.popup_image:
+				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+				self.thumbnail_url = thumbnail_url
+			if self.documents.filter(published=True).count() > 0:
+				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
 		super(Point, self).save(*args, **kwargs)
 
 
@@ -134,15 +133,14 @@ class MultiPoint(AbstractFeature):
 	geom = models.MultiPointField(verbose_name='Points')
 
 	def save(self, *args, **kwargs):
-		# Model has to be saved first to access the tags
-		super(MultiPoint, self).save(*args, **kwargs)
-		self.tag_str = ', '.join(self.tags.names())
-		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-		if self.popup_image:
-			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-			self.thumbnail_url = thumbnail_url
-		if self.documents.filter(published=True).count() > 0:
-			self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
+		if self.id:
+			self.tag_str = ', '.join(self.tags.names())
+			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+			if self.popup_image:
+				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+				self.thumbnail_url = thumbnail_url
+			if self.documents.filter(published=True).count() > 0:
+				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
 		super(MultiPoint, self).save(*args, **kwargs)
 
 
