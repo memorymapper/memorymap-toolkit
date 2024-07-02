@@ -159,7 +159,9 @@ class ThemeAdmin(admin.ModelAdmin):
 
 
 class MapLayerAdmin(admin.ModelAdmin):
-
+	list_display = ['name', 'order']
+	list_editable = ['order']
+	
 	class Meta:
 		model = MapLayer
 

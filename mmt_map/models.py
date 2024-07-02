@@ -118,10 +118,12 @@ class Point(AbstractFeature):
 	def save(self, *args, **kwargs):
 		if self.id:
 			self.tag_str = ', '.join(self.tags.names())
+			# The below is commented out as it's broken and no longer needed with the new frontend. But why isn't it working,
+			# when it did so before?
 			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-			if self.popup_image:
-				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-				self.thumbnail_url = thumbnail_url
+			#if self.popup_image:
+			#	thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			#	self.thumbnail_url = thumbnail_url
 			if self.documents.filter(published=True).count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
 		super(Point, self).save(*args, **kwargs)
@@ -135,10 +137,12 @@ class MultiPoint(AbstractFeature):
 	def save(self, *args, **kwargs):
 		if self.id:
 			self.tag_str = ', '.join(self.tags.names())
+			# The below is commented out as it's broken and no longer needed with the new frontend. But why isn't it working,
+			# when it did so before?
 			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-			if self.popup_image:
-				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-				self.thumbnail_url = thumbnail_url
+			#if self.popup_image:
+			#	thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			#	self.thumbnail_url = thumbnail_url
 			if self.documents.filter(published=True).count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
 		super(MultiPoint, self).save(*args, **kwargs)
@@ -151,10 +155,12 @@ class Polygon(AbstractFeature):
 	def save(self, *args, **kwargs):
 		if self.id:
 			self.tag_str = ', '.join(self.tags.names())
+			# The below is commented out as it's broken and no longer needed with the new frontend. But why isn't it working,
+			# when it did so before?
 			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-			if self.popup_image:
-				thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-				self.thumbnail_url = thumbnail_url
+			#if self.popup_image:
+			#	thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			#	self.thumbnail_url = thumbnail_url
 			if self.documents.all().count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Polygon, self).save(*args, **kwargs)
@@ -165,14 +171,16 @@ class Line(AbstractFeature):
 	geom = models.MultiLineStringField(verbose_name='Line Geometry')
 
 	def save(self, *args, **kwargs):
-		super(Line, self).save(*args, **kwargs)
-		self.tag_str = ', '.join(self.tags.names())
-		# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
-		if self.popup_image:
-			thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
-			self.thumbnail_url = thumbnail_url
-		if self.documents.all().count() > 0:
-			self.attachments = ','.join([d.slug for d in self.documents.all()])
+		if self.id:
+			self.tag_str = ', '.join(self.tags.names())
+			# The below is commented out as it's broken and no longer needed with the new frontend. But why isn't it working,
+			# when it did so before?
+			# The hover thumbnail url needs to be saved in the DB because it needs to be accessed from the MVTs, not the API
+			#if self.popup_image:
+			#	thumbnail_url = get_thumbnailer(self.popup_image)['hover_thumb'].url
+			#	self.thumbnail_url = thumbnail_url
+			if self.documents.all().count() > 0:
+				self.attachments = ','.join([d.slug for d in self.documents.all()])
 		super(Line, self).save(*args, **kwargs)
 
 
@@ -264,6 +272,10 @@ class MapLayer(models.Model):
 	name = models.CharField(max_length=64)
 	tilejson_url = models.URLField(max_length=256)
 	slug = AutoSlugField(populate_from='name')
+	order = models.IntegerField(default=0)
+
+	class Meta():
+		ordering = ['order']
 
 	def __str__(self):
 		return self.name

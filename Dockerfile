@@ -18,8 +18,10 @@ RUN apt-get install \
     libgdal32 \
     libpq-dev \
     postgresql-server-dev-all \
+    libjpeg-turbo-progs \
     libjpeg62-turbo-dev \
     zlib1g-dev \
+    libopenjp2-7-dev \
     netcat-traditional -y
 
 # Install pip requirements

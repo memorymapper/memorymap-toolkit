@@ -184,7 +184,6 @@ CKEDITOR_CONFIGS = {
 THUMBNAIL_ALIASES = {
     '': {
         'site_small': {'size': (300, 200), 'crop': 'smart', 'upscale': True},
-        #'banner': {'size': (600, 350), 'crop': 'smart', 'upscale': True},
         'banner': {'size': (1200, 700), 'scale': True, 'upscale': True},
         'hover_thumb': {'size': (100, 100), 'crop': 'smart', 'upscale': True},
     },
