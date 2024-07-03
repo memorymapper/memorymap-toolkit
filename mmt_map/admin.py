@@ -53,6 +53,14 @@ class AudioFileInline(admin.StackedInline):
 		return set_read_only_fields(request, fields)
 
 
+@admin.action(description="Publish selected features")
+def publish(modeladmin, request, queryset):
+	queryset.update(published=True)
+
+@admin.action(description="Unpublish selected features")
+def unpublish(modeladmin, request, queryset):
+	queryset.update(published=False)
+
 
 class PointAdmin(admin.GeoModelAdmin):
 	form = PointForm
@@ -69,6 +77,8 @@ class PointAdmin(admin.GeoModelAdmin):
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
 
 	search_fields = ['name']
+
+	actions = [publish, unpublish]
 
 	class Meta:
 		model = Point
@@ -94,6 +104,8 @@ class MultiPointAdmin(admin.GeoModelAdmin):
 
 	search_fields = ['name']
 
+	actions = [publish, unpublish]
+
 	class Meta:
 		model = MultiPoint
 
@@ -118,6 +130,8 @@ class PolygonAdmin(admin.GeoModelAdmin):
 
 	search_fields = ['name']
 
+	actions = [publish, unpublish]
+
 	class Meta:
 		model = Polygon
 
@@ -141,6 +155,8 @@ class LineAdmin(admin.GeoModelAdmin):
 	prepopulated_fields = {"popup_audio_slug": ("popup_audio_title",)}
 
 	search_fields = ['name']
+
+	actions = [publish, unpublish]
 
 	class Meta:
 		model = Line
@@ -168,8 +184,8 @@ class MapLayerAdmin(admin.ModelAdmin):
 
 admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Point, PointAdmin)
-# MultiPoint Admin is disabled for now as it's going to be tricky to add the editing interface
-# to the Django site. To be addressed using the revised editing interface.
+# MultiPoint Admin is enabled, but the drawing interface for adding them doesn't work. But you still need to be able to 
+# edit the content...
 admin.site.register(MultiPoint, MultiPointAdmin)
 admin.site.register(Polygon, PolygonAdmin)
 admin.site.register(Line, LineAdmin)
