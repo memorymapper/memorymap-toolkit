@@ -9,9 +9,16 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
+# Add Postgres apt repository so you can get version 16...
+RUN apt-get update
+RUN apt-get install curl ca-certificates -y && \
+    install -d /usr/share/postgresql-common/pgdg && \
+    curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
+    sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
 # Install dependencies
 RUN apt-get update
-RUN apt-get install \ 
+RUN apt-get install \
     gcc \
     python3-dev \
     python3-setuptools \
@@ -39,6 +46,7 @@ USER appuser
 RUN mkdir static && \
     mkdir media && \
     mkdir logs && \
+    mkdir backups && \
     cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
 
 RUN chmod +x entrypoint.sh

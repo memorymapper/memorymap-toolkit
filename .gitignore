@@ -99,6 +99,7 @@ static/
 media/
 notebooks/
 media_old/
+backups/
 
 secret_settings.py
 
@@ -109,3 +110,5 @@ secret_settings.py
 
 *.tar
 *.tar.gz
+
+*.psql

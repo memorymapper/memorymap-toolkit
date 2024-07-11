@@ -26,6 +26,7 @@ services:
     volumes:
       - static:/app/static
       - media:/app/media
+      - backups:/app/backups
       - .:/app
     depends_on:
       - db
@@ -48,3 +49,4 @@ volumes:
   postgres_data:
   static:
   media:
+  backups:

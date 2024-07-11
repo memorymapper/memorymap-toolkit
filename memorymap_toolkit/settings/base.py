@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'taggit',
     'analytical',
     'django_extensions',
+    'dbbackup',
 ]
 
 MIDDLEWARE = [
@@ -299,3 +300,9 @@ if os.environ.get('HTTP_X_FORWARDED_PROTO') == 'True': # Environment variables a
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
     SECURE_PROXY_SSL_HEADER = None
+
+
+# Django DB Backup
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR.child('backups')}
