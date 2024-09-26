@@ -126,6 +126,8 @@ class Point(AbstractFeature):
 			#	self.thumbnail_url = thumbnail_url
 			if self.documents.filter(published=True).count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
+			else:
+				self.attachments = ''
 		super(Point, self).save(*args, **kwargs)
 
 
@@ -145,6 +147,8 @@ class MultiPoint(AbstractFeature):
 			#	self.thumbnail_url = thumbnail_url
 			if self.documents.filter(published=True).count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.filter(published=True)])
+			else:
+				self.attachments = ''
 		super(MultiPoint, self).save(*args, **kwargs)
 
 
@@ -163,6 +167,8 @@ class Polygon(AbstractFeature):
 			#	self.thumbnail_url = thumbnail_url
 			if self.documents.all().count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.all()])
+			else:
+				self.attachments = ''
 		super(Polygon, self).save(*args, **kwargs)
 
 
@@ -181,6 +187,8 @@ class Line(AbstractFeature):
 			#	self.thumbnail_url = thumbnail_url
 			if self.documents.all().count() > 0:
 				self.attachments = ','.join([d.slug for d in self.documents.all()])
+			else:
+				self.attachments = ''
 		super(Line, self).save(*args, **kwargs)
 
 
@@ -208,7 +216,7 @@ class AbstractAttachment(models.Model):
 	line = models.ForeignKey(Line, related_name='%(class)ss', null=True, blank=True, on_delete=models.SET_NULL)
 	author = models.ForeignKey(User, related_name='%(app_label)s_%(class)s_author', null=True, on_delete=models.SET_NULL)
 	title = models.CharField(max_length=128)
-	slug = AutoSlugField(populate_from='title')
+	slug = AutoSlugField(populate_from=['title', 'id'], allow_duplicates=True)
 	order = models.PositiveSmallIntegerField(default=0)
 	created = models.DateField(auto_now_add=True, null=True, blank=True)
 	last_edited = models.DateField(auto_now=True, null=True, blank=True)

@@ -29,6 +29,7 @@ README.md
 **/media_old
 **/static
 **/notebooks
+**/backups
 secret_settings.py
 **/*.tar.gz
 **/logs

@@ -208,6 +208,8 @@ CONSTANCE_ADDITIONAL_FIELDS = {
             ("https://api.maptiler.com/maps/landscape/style.json", "Landscape"),
             ("https://api.maptiler.com/maps/streets-v2/style.json", "Streets"),
             ("https://api.maptiler.com/maps/dataviz/style.json", "Dataviz"),
+            ("https://api.maptiler.com/maps/topo-v2/style.json", 'Topo'),
+            ("https://api.maptiler.com/maps/uk-openzoomstack-night/style.json", 'UK OpenZoomStack Night')
         )
     }]
 }

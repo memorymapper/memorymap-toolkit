@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity, SearchHeadline
 from django.conf import settings
+from django.utils.text import slugify
 
 # 3rd Party
 from rest_framework.decorators import api_view, permission_classes
@@ -13,9 +14,11 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import status, filters
 from constance import config
 from rest_framework.generics import ListAPIView
+from taggit.models import Tag
 
 # Other Python modules
 import json 
+from urllib.parse import unquote
 
 # Memory Map Toolkit
 from mmt_map.models import Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList, MapLayer, MultiPoint
@@ -173,16 +176,19 @@ def feature_list(request):
 	points = Point.objects.filter(published=True)
 	lines = Line.objects.filter(published=True)
 	polygons = Polygon.objects.filter(published=True)
+	multipoints = MultiPoint.objects.filter(published=True)
 
 	points_serializer = PointSerializer(points, many=True)
 	lines_serializer = LineSerializer(lines, many=True)
 	polygons_serializer = PolygonSerializer(polygons, many=True)
+	multipoints_serializer = MultiPointSerializer(multipoints, many=True)
 
 	points_data = points_serializer.data
 	lines_data = lines_serializer.data
 	polygons_data = polygons_serializer.data
+	multipoints_data = multipoints_serializer.data
 
-	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	features = points_data['features'] + lines_data['features'] + polygons_data['features'] + multipoints_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
 	paginator = Paginator(sorted_features, 20)
@@ -219,16 +225,19 @@ def search_features(request):
 	points = Point.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
 	lines = Line.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
 	polygons = Polygon.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
+	multipoints = MultiPoint.objects.filter(Q(published=True), Q(name__icontains=search_string) | Q(tags__name__in=[search_string])).distinct()
 
 	points_serializer = PointSerializer(points, many=True)
 	lines_serializer = LineSerializer(lines, many=True)
 	polygons_serializer = PolygonSerializer(polygons, many=True)
+	multipoints_serializer = MultiPointSerializer(polygons, many=True)
 
 	points_data = points_serializer.data
 	lines_data = lines_serializer.data
 	polygons_data = polygons_serializer.data
+	multipoints_data = multipoints_serializer.data
 
-	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	features = points_data['features'] + lines_data['features'] + polygons_data['features'] + multipoints_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
 	paginator = Paginator(sorted_features, 5)
@@ -620,6 +629,7 @@ def site_config(request):
 		'TERRAIN_EXAGGERATION': config.TERRAIN_EXAGGERATION,
 		'themes': {},
 		'tagLists': {},
+		'allTags': [],
 		'mapLayers': []
 	}
 
@@ -643,7 +653,8 @@ def site_config(request):
 		}
 		for tag in tl['tags']:
 			config_dict['tagLists'][tl['id']]['tags'][tag['id']] = {'name': tag['name'], 'slug': tag['slug'], 'active': True}
-		
+			config_dict['allTags'].append(tag['name'])
+
 	map_layers = MapLayer.objects.all()
 	serializer = MapLayerSerializer(map_layers, many=True)
 
@@ -683,6 +694,8 @@ def search(request):
 		query = SearchQuery(search_string, search_type='phrase')
 		
 		points = Point.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
+
+		multipoints = MultiPoint.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
 		
 		lines = Line.objects.annotate(similarity = TrigramSimilarity('name__unaccent', search_string),).filter(similarity__gt=0.2, published=True).order_by('-similarity')[:limit]
 
@@ -705,7 +718,27 @@ def search(request):
 						'slug': p.documents.all()[0].slug,
 						'description': p.description,
 						'similarity': p.similarity,
-						'coordinates': p.geom.coords
+						'coordinates': p.geom.coords,
+						'type': p.get_type()
+					}
+				)
+			except:
+				continue
+
+		for p in multipoints:
+			try:
+				results.append(
+					{
+						'id': p.id,
+						'name': p.name,
+						'uuid': p.uuid,
+						'category': 'Place',
+						'slug': p.documents.all()[0].slug,
+						'description': p.description,
+						'similarity': p.similarity,
+						'coordinates': p.geom.coords,
+						'type': p.get_type(),
+						'geom': p.geom.json
 					}
 				)
 			except:
@@ -722,7 +755,8 @@ def search(request):
 						'slug': l.documents.all()[0].slug,
 						'description': l.description,
 						'similarity': l.similarity,
-						'coordinates': l.geom.coords
+						'coordinates': l.geom.coords,
+						'type': p.get_type()
 					}
 				)
 			except:
@@ -739,7 +773,8 @@ def search(request):
 						'slug': p.documents.all()[0].slug,
 						'description': p.description,
 						'similarity': p.similarity,
-						'coordinates': p.geom.coords
+						'coordinates': p.geom.coords,
+						'type': p.get_type()
 					}
 				)
 			except:
@@ -773,21 +808,68 @@ def search(request):
 def filterable_feature_list(request):
 	"""A feature list, filterable by theme and tag"""
 
+	# Construct the base queries - you want to filter all the published features
 	points = Point.objects.filter(published=True)
 	lines = Line.objects.filter(published=True)
 	polygons = Polygon.objects.filter(published=True)
+	multipoints = MultiPoint.objects.filter(published=True)
 
+	# If both theme and tag filters are active, filter the results by both
 	if ('themes' in request.GET) and ('tags' in request.GET):
+		# Sense check - are the request paramaters filled? If not, return 404
 		if (request.GET['themes'] == '') or (request.GET['tags'] == ''):
 			return Response('No Results', status=status.HTTP_404_NOT_FOUND)
-		themes = request.GET['themes'].split(',')
-		tags = request.GET['tags'].split(',')
-		if (len(themes) and themes[0] != '') and (len(tags) and tags[0] != ''):
-			points = points.filter(theme__in=themes, tags__name__in=tags).distinct()
-			lines = lines.filter(theme__in=themes, tags__name__in=tags).distinct()
-			polygons = polygons.filter(theme__in=themes, tags__name__in=tags).distinct()
+		
+		# Get the theme IDs
+		theme_ids = [int(t) for t in request.GET['themes'].split(',')]
+		
+		# Get the tag names, using unquote to transform them if they've been URL encoded
+		tag_names = [unquote(t) for t in request.GET['tags'].split(',')]
+
+		# Get the themes and tags - not sure this extra step is needed
+		themes = Theme.objects.filter(id__in=theme_ids)
+		tags = Tag.objects.filter(name__in=tag_names)
 
 
+		# If there are no hits, return 404
+		if (themes.count() == 0) and (tags.count() == 0):
+			return Response('No Results', status=status.HTTP_404_NOT_FOUND)
+
+		# If the themes length and tags length from the api is the same as what's in the db, don't filter anything
+		
+		isFiltered = False
+
+		if (themes.count() != Theme.objects.all().count()) or (tags.count() != Tag.objects.filter(taglist__isnull=False).count()):
+			isFiltered = True
+			
+		# The filters should be OR within each group (ie. TagList or Theme) but ANDed with one another.
+		# Themes are easy - they can be trivially ORed by using the __in= query syntax
+		# Tags are harder as they don't come to the API service pre-grouped, so the easiest way to handle
+		# the logic is to iterate over the tag lists individually to create Q objects which then 
+		# filter the features using OR for tags in each TagList. Applying these cumulatively (ie. after each)
+		# iteration over a TagList creates an AND logic between the groups.
+		
+		if (isFiltered): # Only do this if any filters are active
+			print('fired')
+			tag_lists = TagList.objects.all()
+			
+			for tl in tag_lists:
+				q_objects = Q()
+				for t in tl.tags.all():
+					if t in tags:
+						q_objects |= Q(tags=t) # 'or' the Q objects together
+				
+				# Filter the geometries
+				multipoints = multipoints.filter(Q(q_objects))
+				points = points.filter(Q(q_objects))
+				lines = lines.filter(Q(q_objects))
+				polygons = polygons.filter(Q(q_objects))
+
+			# Finally, apply the theme filters
+			multipoints = multipoints.filter(theme__in=themes)
+			points = points.filter(theme__in=themes).distinct()
+			lines = lines.filter(theme__in=themes).distinct()
+			polygons = polygons.filter(theme__in=themes).distinct()
 	
 	elif ('themes' in request.GET) and ('tags' not in request.GET):
 		themes = request.GET['themes'].split(',')
@@ -795,6 +877,7 @@ def filterable_feature_list(request):
 			points = points.filter(theme__in=themes).distinct()
 			lines = lines.filter(theme__in=themes).distinct()
 			polygons = polygons.filter(theme__in=themes).distinct()
+			multipoints = multipoints.filter(theme__in=themes).distinct()
 
 	elif ('tags' in request.GET) and ('themes' not in request.GET):
 		tags = request.GET['tags'].split(',')
@@ -802,17 +885,20 @@ def filterable_feature_list(request):
 			points = points.filter(tags__name__in=tags).distinct()
 			lines = lines.filter(tags__name__in=tags).distinct()
 			polygons = polygons.filter(tags__name__in=tags).distinct()
+			multipoints = multipoints.filter(tags__name__in=tags).distinct()
 
 
 	points_serializer = PointSerializer(points, many=True)
 	lines_serializer = LineSerializer(lines, many=True)
 	polygons_serializer = PolygonSerializer(polygons, many=True)
+	multipoints_serializer = MultiPointSerializer(multipoints, many=True)
 
 	points_data = points_serializer.data
 	lines_data = lines_serializer.data
 	polygons_data = polygons_serializer.data
+	multipoints_data = multipoints_serializer.data
 
-	features = points_data['features'] + lines_data['features'] + polygons_data['features']
+	features = points_data['features'] + lines_data['features'] + polygons_data['features'] + multipoints_data['features']
 	sorted_features = sorted(features, key=lambda x: x['properties']['name'])
 
 	paginator = Paginator(sorted_features, 20)
@@ -829,7 +915,8 @@ def filterable_feature_list(request):
 	features_list = {
 		'page': page,
 		'totalPages': paginator.num_pages,
-		'features': paginator.page(page).object_list
-	}  
+		'features': paginator.page(page).object_list,
+		'featureCount': paginator.count
+	} 
 
 	return Response(features_list)
