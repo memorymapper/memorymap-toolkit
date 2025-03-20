@@ -181,10 +181,7 @@ def style_json(request):
 	if r.status_code == requests.codes.ok:
 		style = r.json()
 
-		sources = []
-		layers = []
-
-		for layer in MapLayer.objects.all():
+		for layer in MapLayer.objects.all().order_by('order'):
 			style['sources'][layer.slug] = {
 				'type': 'raster',
 				'url': layer.tilejson_url,

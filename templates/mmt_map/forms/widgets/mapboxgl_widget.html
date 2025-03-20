@@ -1,5 +1,17 @@
-<div id="admin_map" style="width:100%; height: 300px;">
-</div>
+<div style="width:100%;">
+    <div id="admin_map" style="
+        width:100%; 
+        height: 400px; 
+        ">
+    </div>
+    <div class="map-overlay-inner" style="
+        width: 25%;
+        padding: 10px;">
+    </div>
+</div>    
+
+
+
 
 <textarea id="map_geom" class="required hidden" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
 
@@ -47,6 +59,13 @@ const baseMapStyleFile = '{{ config.BASE_MAP_STYLE_FILE|safe }}';
 const baseMapStyleKey = '{{ config.MAPTILER_KEY }}';
 mapboxgl.accessToken = '{{ config.MAPBOX_KEY }}';
 
+// Right-to-left text
+mapboxgl.setRTLTextPlugin(
+    'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.3.0/mapbox-gl-rtl-text.js',
+    null,
+    true // Lazy load the plugin
+);
+
 const map = new mapboxgl.Map({
     container: 'admin_map',
     center: mapCenter,
@@ -88,6 +107,31 @@ django.jQuery.get(baseMapStyle, function(data) {
     //    style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + baseMapStyleKey;
     //    style.glyphs = style.glyphs + baseMapStyleKey;
     //}
+
+    rasterLayers = style.layers.filter(l => l.type == 'raster')
+
+    if (rasterLayers.length) {
+
+        let label = `<label>Map Layers:</label>`;
+        django.jQuery('.map-overlay-inner').append(label);
+
+        rasterLayers.forEach(layer => {
+            let checkbox = `<label><input type="checkbox" class="raster-layer-checkbox" data-layer-id="${layer.id}" checked> ${layer.id}</label><br>`;
+            django.jQuery('.map-overlay-inner').append(checkbox);
+        });
+
+        // Add event listener to checkboxes
+        django.jQuery('.raster-layer-checkbox').change(function() {
+            let layerId = django.jQuery(this).data('layer-id');
+            if (this.checked) {
+                map.setLayoutProperty(layerId, 'visibility', 'visible');
+            } else {
+                map.setLayoutProperty(layerId, 'visibility', 'none');
+            }
+        });
+    }
+
+
 
     map.setStyle(style);
 
