@@ -12,12 +12,13 @@ from django.contrib.gis.geos import GEOSGeometry
 import json 
 from datetime import datetime
 from psycopg2 import sql
+import requests
 
 # Third Party Django apps
 from constance import config
 
 # Memory Map Toolkit
-from .models import Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList
+from .models import Point, Line, Polygon, Theme, Document, Image, AudioFile, TagList, MapLayer
 from mmt_pages.models import Page
 from mmt_api.serializers import PointSerializer, PolygonSerializer, PointDetailSerializer, DocumentSerializer
 from .vector_tile_helpers import tileIsValid, tileToEnvelope
@@ -156,3 +157,54 @@ def tile_json(request):
 	}
 
 	return JsonResponse(json)
+
+def style_json(request):
+	"""Returns the base map style for the main map for use in the admin site"""
+
+	if request.is_secure():
+		scheme = 'https'
+	else:
+		scheme = request.scheme
+
+	host = request.get_host()
+
+	# This works by getting the base map style, then appending the raster layers to the returned
+	# styleJSON object
+
+	maptiler_key = config.MAPTILER_KEY
+	style_url = config.MAPTILER_STYLE
+
+	params = {'key': maptiler_key}
+
+	r = requests.get(style_url, params=params)
+
+	if r.status_code == requests.codes.ok:
+		style = r.json()
+
+		sources = []
+		layers = []
+
+		for layer in MapLayer.objects.all():
+			style['sources'][layer.slug] = {
+				'type': 'raster',
+				'url': layer.tilejson_url,
+				'tileSize': 256
+			}
+			
+			l = {
+				'id': layer.slug,
+				'type': 'raster',
+				'source': layer.slug,
+				'visibility': 'visible'
+			}
+
+			style['layers'].append(l)
+		
+		return JsonResponse(style)
+	
+	else:
+		return JsonResponse({'ok': False})
+
+	
+
+

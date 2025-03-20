@@ -1,4 +1,5 @@
-<div id="admin_map" style="width:100%; height: 300px;"></div>
+<div id="admin_map" style="width:100%; height: 300px;">
+</div>
 
 <textarea id="map_geom" class="required hidden" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
 
@@ -64,22 +65,29 @@ let baseMapStyle;
 {% load static %}
 {% get_media_prefix as MEDIA_URL %}
 
+/* Map style is now a choice of MapTiler default styles which can be set 
+in constance, with raster map layers added on top using MapLayers (see 
+mmt_map.models). The complete style is loaded from /tiles/style.json, so
+it can be used here, and in principal in the front end too. */
+
+/*
 if (baseMapStyleFile != 'default.json') {
 	baseMapStyle = '{{ MEDIA_URL}}' + baseMapStyleFile;
 } else {
 	baseMapStyle = baseMapStyleUrl;
-}
+}*/
 
+baseMapStyle = '/tiles/style.json'
 
 django.jQuery.get(baseMapStyle, function(data) {
 
     let style = data;
 
     // If the default map style is being used, add the key to the sources and glyphs urls
-    if (baseMapStyleUrl == '/static/js/default_map_style.json') {
-        style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + baseMapStyleKey;
-        style.glyphs = style.glyphs + baseMapStyleKey;
-    }
+    //if (baseMapStyleUrl == '/static/js/default_map_style.json') {
+    //    style.sources['Ordnance Survey Open Zoomstack'].url = style.sources['Ordnance Survey Open Zoomstack'].url + baseMapStyleKey;
+    //    style.glyphs = style.glyphs + baseMapStyleKey;
+    //}
 
     map.setStyle(style);
 

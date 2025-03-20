@@ -12,4 +12,5 @@ urlpatterns = [
 	path('text-only/', views.text_only_feature_list, name='text_only'),
 	re_path(r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)\.(?P<tile_format>\w+)$', views.vector_tile, name='vector_tile'),
     re_path(r'tiles/interactive\.json', views.tile_json, name='tile_json'),
+    re_path(r'tiles/style\.json', views.style_json, name='style_json') # The base map style - for use in the admin
 ]
