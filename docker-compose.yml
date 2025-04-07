@@ -18,6 +18,11 @@ services:
       - 5433:5432
     env_file:
       - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   memorymaptoolkit:
     image: memorymaptoolkit
     build:
@@ -29,7 +34,8 @@ services:
       - backups:/app/backups
       - .:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: python manage.py runserver 0.0.0.0:8000 --settings=memorymap_toolkit.settings.local
     ports:
       - 8000:8000
