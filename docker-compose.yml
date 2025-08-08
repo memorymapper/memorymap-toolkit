@@ -6,18 +6,20 @@ version: '3.4'
 
 services:
   db:
-    image: kartoza/postgis:16-3.4
+    image: postgis/postgis:17-3.5-alpine
     volumes:
       - postgres_data:/var/lib/postgresql
+      - backups:/backups
     environment:
       - POSTGRES_USER=${DJANGO_DB_USER}
-      - POSTGRES_DBNAME=${DJANGO_DB_NAME}
-      - POSTGRES_PASS=${DJANGO_DB_PASSWORD}
+      - POSTGRES_DB=${DJANGO_DB_NAME}
+      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
       - ALLOW_IP_RANGE=0.0.0.0/0
     ports:
       - 5433:5432
     env_file:
       - .env
+    platform: linux/amd64
   memorymaptoolkit:
     image: memorymaptoolkit
     build:

@@ -49,6 +49,7 @@ RUN mkdir static && \
     mkdir backups && \
     cp memorymap_toolkit/settings/secret_settings_template.py memorymap_toolkit/settings/secret_settings.py
 
+
 RUN chmod +x entrypoint.sh
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
