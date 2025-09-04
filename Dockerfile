@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 EXPOSE 8000
 
@@ -14,25 +14,34 @@ RUN apt-get update
 RUN apt-get install curl ca-certificates -y && \
     install -d /usr/share/postgresql-common/pgdg && \
     curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
-    sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
 # Install dependencies
-RUN apt-get update
+
 RUN apt-get install \
     gcc \
     python3-dev \
     python3-setuptools \
-    libgdal32 \
+    libgdal36 \
     libpq-dev \
     postgresql-server-dev-all \
     libjpeg-turbo-progs \
     libjpeg62-turbo-dev \
     zlib1g-dev \
     libopenjp2-7-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libfreetype6-dev \
+    libfreetype6 \
+    libffi-dev \
+    libzmq3-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
     netcat-traditional -y
 
 # Install pip requirements
 COPY requirements.txt .
+RUN python -m pip install --upgrade pip setuptools wheel
 RUN python -m pip install -r requirements.txt
 
 WORKDIR /app
