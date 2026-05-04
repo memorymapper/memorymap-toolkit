@@ -3,7 +3,8 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
 
-ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost')]
+# Hosts are split in case more than one (space-separated) host is provided in the .env file
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split()
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
