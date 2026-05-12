@@ -34,6 +34,6 @@ try:
 except:
     pw = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
     if pw:
-        u = User.objects.create(username=os.environ.get('DJANGO_SUPERUSER', 'admin'), is_superuser=True, is_staff=True)
+        u = User.objects.create(username=os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin'), is_superuser=True, is_staff=True)
         u.set_password(pw)
         u.save()
