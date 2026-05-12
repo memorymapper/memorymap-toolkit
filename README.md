@@ -61,7 +61,7 @@ pip install -r requirements.txt
 sudo -u postgres psql
 ```
 ```sql
-CREATE USER memorymappper WITH PASSWORD 'your_password';
+CREATE USER memorymapper WITH PASSWORD 'your_password';
 CREATE DATABASE memorymap;
 GRANT ALL PRIVILEGES ON DATABASE memorymap TO memorymapper;
 \c memorymap;
